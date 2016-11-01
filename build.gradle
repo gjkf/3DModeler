@@ -19,7 +19,7 @@ applicationDistribution.exclude("libraries/*")
 
 def lwjglVersion = "3.0.0a"
 
-mainClassName = "com.gjkf.modeler.test.Main"
+mainClassName = "test.Main"
 
 repositories {
     mavenCentral()

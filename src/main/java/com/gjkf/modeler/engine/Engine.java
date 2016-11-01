@@ -3,6 +3,8 @@
  */
 package com.gjkf.modeler.engine;
 
+import static com.sun.prism.impl.Disposer.cleanUp;
+
 /**
  * This is the main class. <p>
  * Here happens the game loop ({@link #gameLoop()}) and all the relevant updates.
@@ -76,6 +78,8 @@ public class Engine implements Runnable{
             gameLoop();
         } catch (Exception excp) {
             excp.printStackTrace();
+        }finally{
+            cleanUp();
         }
     }
 

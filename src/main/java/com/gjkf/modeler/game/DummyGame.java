@@ -1,12 +1,13 @@
 /*
  * Created by Davide Cossu (gjkf), 11/1/2016
  */
-package com.gjkf.modeler.test;
+package com.gjkf.modeler.game;
 
 import com.gjkf.modeler.engine.IGameLogic;
 import com.gjkf.modeler.engine.Window;
-import com.gjkf.modeler.game.render.Color4f;
-import com.gjkf.modeler.game.render.Renderer;
+import com.gjkf.modeler.engine.render.Color4f;
+import com.gjkf.modeler.engine.render.Mesh;
+import com.gjkf.modeler.engine.render.Renderer;
 
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_DOWN;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_UP;
@@ -20,6 +21,8 @@ public class DummyGame implements IGameLogic{
 
     private final Renderer renderer;
 
+    private Mesh mesh;
+
     public DummyGame() {
         renderer = new Renderer();
     }
@@ -27,6 +30,22 @@ public class DummyGame implements IGameLogic{
     @Override
     public void init() throws Exception {
         renderer.init();
+        float[] positions = new float[]{
+                -0.5f,  0.5f, 0.0f,
+                -0.5f, -0.5f, 0.0f,
+                0.5f, -0.5f, 0.0f,
+                0.5f,  0.5f, 0.0f,
+        };
+        float[] colours = new float[]{
+                0.5f, 0.0f, 0.0f,
+                0.0f, 0.5f, 0.0f,
+                0.0f, 0.0f, 0.5f,
+                0.0f, 0.5f, 0.5f,
+        };
+        int[] indices = new int[]{
+                0, 1, 3, 3, 1, 2,
+        };
+        mesh = new Mesh(positions, colours, indices);
     }
 
     @Override
@@ -58,6 +77,12 @@ public class DummyGame implements IGameLogic{
         }
 
         window.setClearColor(new Color4f(color, color, color, 1.0f));
-        renderer.clear();
+        renderer.render(window, mesh);
+    }
+
+    @Override
+    public void cleanup(){
+        renderer.cleanUp();
+        mesh.cleanUp();
     }
 }

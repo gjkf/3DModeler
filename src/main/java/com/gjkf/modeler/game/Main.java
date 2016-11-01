@@ -1,11 +1,10 @@
 /*
  * Created by Davide Cossu (gjkf), 11/1/2016
  */
-package com.gjkf.modeler.test;
+package com.gjkf.modeler.game;
 
 import com.gjkf.modeler.engine.Engine;
 import com.gjkf.modeler.engine.IGameLogic;
-import com.gjkf.modeler.game.SharedLibraryLoader;
 
 public class Main{
 

@@ -3,7 +3,7 @@
  */
 package com.gjkf.modeler.engine;
 
-import com.gjkf.modeler.game.render.Color4f;
+import com.gjkf.modeler.engine.render.Color4f;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWKeyCallback;
 import org.lwjgl.glfw.GLFWWindowSizeCallback;

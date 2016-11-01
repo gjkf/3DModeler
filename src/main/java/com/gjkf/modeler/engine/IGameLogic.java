@@ -41,4 +41,10 @@ public interface IGameLogic {
      */
 
     void render(Window window);
+
+    /**
+     * Cleans up the resources.
+     */
+
+    void cleanup();
 }

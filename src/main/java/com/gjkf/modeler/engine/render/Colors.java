@@ -1,7 +1,7 @@
 /*
   Created by Davide Cossu (gjkf), 7/9/2016
  */
-package com.gjkf.modeler.game.render;
+package com.gjkf.modeler.engine.render;
 
 public enum Colors{
 
