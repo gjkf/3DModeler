@@ -1,0 +1,65 @@
+group 'com.gjkf'
+version '0.1'
+
+apply plugin: 'java'
+apply plugin: 'application'
+
+sourceSets {
+    main {
+        java {
+            srcDir 'src/test/java'
+        }
+        resources {
+            srcDir 'src/test/resources'
+        }
+    }
+}
+
+applicationDistribution.exclude("libraries/*")
+
+def lwjglVersion = "3.0.0a"
+
+mainClassName = "com.gjkf.modeler.Main"
+
+repositories {
+    mavenCentral()
+    maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '3.0'
+}
+
+dependencies {
+    compile "org.lwjgl:lwjgl:${lwjglVersion}"
+    compile "org.lwjgl:lwjgl-platform:${lwjglVersion}:natives-windows"
+    compile "org.lwjgl:lwjgl-platform:${lwjglVersion}:natives-linux"
+    compile "org.lwjgl:lwjgl-platform:${lwjglVersion}:natives-osx"
+    compile "org.encog:encog-core:3.4.0-SNAPSHOT"
+    compile "org.joml:joml:1.8.2"
+}
+
+jar{
+    manifest{
+        attributes(
+                "Main-Class": mainClassName,
+                "Implementation-Title": project.name,
+                "Implementation-Version": project.version
+        )
+    }
+}
+
+// add source jar
+task sourceJar(type: Jar) {
+    from sourceSets.main.allSource
+    classifier = 'source'
+}
+
+// deobf jars
+task deobfJar(type: Jar) {
+    from sourceSets.main.output
+    classifier = 'deobf'
+}
+
+// make sure all of these happen when we run build
+build.dependsOn sourceJar, deobfJar
