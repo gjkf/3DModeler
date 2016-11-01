@@ -4,7 +4,7 @@ version '0.1'
 apply plugin: 'java'
 apply plugin: 'application'
 
-sourceSets {
+sourceSets{
     main {
         java {
             srcDir 'src/test/java'
@@ -19,7 +19,7 @@ applicationDistribution.exclude("libraries/*")
 
 def lwjglVersion = "3.0.0a"
 
-mainClassName = "com.gjkf.modeler.Main"
+mainClassName = "com.gjkf.modeler.test.Main"
 
 repositories {
     mavenCentral()

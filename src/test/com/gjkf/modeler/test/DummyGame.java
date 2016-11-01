@@ -1,10 +1,12 @@
 /*
  * Created by Davide Cossu (gjkf), 11/1/2016
  */
-package com.gjkf.modeler.game;
+package com.gjkf.modeler.test;
 
 import com.gjkf.modeler.engine.IGameLogic;
 import com.gjkf.modeler.engine.Window;
+import com.gjkf.modeler.game.render.Color4f;
+import com.gjkf.modeler.game.render.Renderer;
 
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_DOWN;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_UP;
@@ -55,7 +57,7 @@ public class DummyGame implements IGameLogic{
             window.setResized(false);
         }
 
-        window.setClearColor(color, color, color, 0.0f);
+        window.setClearColor(new Color4f(color, color, color, 1.0f));
         renderer.clear();
     }
 }

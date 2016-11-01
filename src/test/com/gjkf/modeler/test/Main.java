@@ -1,11 +1,11 @@
 /*
  * Created by Davide Cossu (gjkf), 11/1/2016
  */
-package com.gjkf.modeler;
+package com.gjkf.modeler.test;
 
 import com.gjkf.modeler.engine.Engine;
 import com.gjkf.modeler.engine.IGameLogic;
-import com.gjkf.modeler.game.DummyGame;
+import com.gjkf.modeler.game.SharedLibraryLoader;
 
 public class Main{
 
@@ -20,7 +20,7 @@ public class Main{
         try {
             boolean vSync = true;
             IGameLogic gameLogic = new DummyGame();
-            Engine gameEng = new Engine("GAME", 1000, 1000, vSync, gameLogic);
+            Engine gameEng = new Engine("Game", 1000, 1000, vSync, gameLogic);
             gameEng.start();
         } catch (Exception excp) {
             excp.printStackTrace();

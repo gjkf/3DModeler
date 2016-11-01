@@ -3,6 +3,7 @@
  */
 package com.gjkf.modeler.engine;
 
+import com.gjkf.modeler.game.render.Color4f;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWKeyCallback;
 import org.lwjgl.glfw.GLFWWindowSizeCallback;
@@ -17,25 +18,57 @@ import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
+/**
+ * Object representing the current window.
+ */
+
 public class Window {
 
+    /**
+     * The title of the window.
+     */
     private final String title;
-
+    /**
+     * The width of the window.
+     */
     private int width;
-
+    /**
+     * The height of the window.
+     */
     private int height;
-
+    /**
+     * The long ID of the current window.
+     */
     private long windowHandle;
-
+    /**
+     * The error callback.
+     */
     private GLFWErrorCallback errorCallback;
-
+    /**
+     * The key callback.
+     */
     private GLFWKeyCallback keyCallback;
-
+    /**
+     * The window resize callback.
+     */
     private GLFWWindowSizeCallback windowSizeCallback;
-
+    /**
+     * Whether or not the window has been resized.
+     */
     private boolean resized;
-
+    /**
+     * Whether or not this window should use vSync.
+     */
     private boolean vSync;
+
+    /**
+     * The window constructor.
+     *
+     * @param title The title of the window.
+     * @param width The width of the window.
+     * @param height The height of the window.
+     * @param vSync Whether or not should use vSync.
+     */
 
     public Window(String title, int width, int height, boolean vSync) {
         this.title = title;
@@ -44,6 +77,10 @@ public class Window {
         this.vSync = vSync;
         this.resized = false;
     }
+
+    /**
+     * Initializes the GL context, sets up the callbacks, defines the hints and displays the window.
+     */
 
     public void init() {
         // Setup an error callback. The default implementation
@@ -111,45 +148,111 @@ public class Window {
         glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     }
 
-    public void setClearColor(float r, float g, float b, float alpha) {
-        glClearColor(r, g, b, alpha);
+    /**
+     * Sets the background color.
+     *
+     * @param color The color.
+     */
+
+    public void setClearColor(Color4f color) {
+        glClearColor(color.r, color.g, color.b, color.a);
     }
+
+    /**
+     * Returns TRUE if the given key is pressed.
+     *
+     * @param keyCode The key code.
+     *
+     * @return The key status.
+     */
 
     public boolean isKeyPressed(int keyCode) {
         return glfwGetKey(windowHandle, keyCode) == GLFW_PRESS;
     }
 
+    /**
+     * Whether or not the window should close.
+     *
+     * @return Whether or not the window should close.
+     */
+
     public boolean windowShouldClose() {
         return glfwWindowShouldClose(windowHandle) == GL11.GL_TRUE;
     }
+
+    /**
+     * Returns the title of this window.
+     *
+     * @return The title.
+     */
 
     public String getTitle() {
         return title;
     }
 
+    /**
+     * Returns the width of this window.
+     *
+     * @return The width.
+     */
+
     public int getWidth() {
         return width;
     }
+
+    /**
+     * Returns the height of this window.
+     *
+     * @return The height.
+     */
 
     public int getHeight() {
         return height;
     }
 
+    /**
+     * Returns whether or not the window has been resized.
+     *
+     * @return TRUE if resized.
+     */
+
     public boolean isResized() {
         return resized;
     }
+
+    /**
+     * Sets the resized variable.
+     *
+     * @param resized The new status.
+     */
 
     public void setResized(boolean resized) {
         this.resized = resized;
     }
 
+    /**
+     * Whether or not the window has vSync enabled.
+     *
+     * @return {@link #vSync}
+     */
+
     public boolean isvSync() {
         return vSync;
     }
 
+    /**
+     * Sets vSync
+     *
+     * @param vSync The new status.
+     */
+
     public void setvSync(boolean vSync) {
         this.vSync = vSync;
     }
+
+    /**
+     * Updates the window swapping the buffers.
+     */
 
     public void update() {
         glfwSwapBuffers(windowHandle);
