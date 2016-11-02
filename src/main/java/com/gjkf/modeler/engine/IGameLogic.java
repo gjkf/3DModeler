@@ -13,10 +13,12 @@ public interface IGameLogic {
     /**
      * Initializes the game logic
      *
+     * @param window The window
+     *
      * @throws Exception If anything went wrong.
      */
 
-    void init() throws Exception;
+    void init(Window window) throws Exception;
 
     /**
      * Retrieves the inputs from the window.
