@@ -6,14 +6,10 @@ package com.gjkf.modeler.engine;
 import com.gjkf.modeler.engine.render.Color4f;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWKeyCallback;
+import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.glfw.GLFWWindowSizeCallback;
-import org.lwjgl.glfw.GLFWvidmode;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GLContext;
+import org.lwjgl.opengl.GL;
 
-import java.nio.ByteBuffer;
-
-import static org.lwjgl.glfw.Callbacks.errorCallbackPrint;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
@@ -85,10 +81,10 @@ public class Window {
     public void init() {
         // Setup an error callback. The default implementation
         // will print the error message in System.err.
-        glfwSetErrorCallback(errorCallback = errorCallbackPrint(System.err));
+        glfwSetErrorCallback(errorCallback = GLFWErrorCallback.createPrint(System.err));
 
         // Initialize GLFW. Most GLFW functions will not work before doing this.
-        if (glfwInit() != GL11.GL_TRUE) {
+        if (!glfwInit()) {
             throw new IllegalStateException("Unable to initialize GLFW");
         }
 
@@ -121,15 +117,19 @@ public class Window {
             @Override
             public void invoke(long window, int key, int scancode, int action, int mods) {
                 if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE) {
-                    glfwSetWindowShouldClose(window, GL11.GL_TRUE);
+                    glfwSetWindowShouldClose(window, true);
                 }
             }
         });
 
         // Get the resolution of the primary monitor
-        ByteBuffer vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+        GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
         // Center our window
-        glfwSetWindowPos(windowHandle, (GLFWvidmode.width(vidmode) - width) / 2, (GLFWvidmode.height(vidmode) - height) / 2);
+        glfwSetWindowPos(
+                windowHandle,
+                (vidmode.width() - width) / 2,
+                (vidmode.height() - height) / 2
+        );
 
         // Make the OpenGL context current
         glfwMakeContextCurrent(windowHandle);
@@ -142,7 +142,10 @@ public class Window {
         // Make the window visible
         glfwShowWindow(windowHandle);
 
-        GLContext.createFromCurrent();
+        // Make the OpenGL context current
+        glfwMakeContextCurrent(windowHandle);
+
+        GL.createCapabilities();
 
         // Set the clear color
         glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
@@ -179,7 +182,7 @@ public class Window {
      */
 
     public boolean windowShouldClose() {
-        return glfwWindowShouldClose(windowHandle) == GL11.GL_TRUE;
+        return glfwWindowShouldClose(windowHandle);
     }
 
     /**
