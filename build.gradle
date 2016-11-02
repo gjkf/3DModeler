@@ -35,8 +35,8 @@ dependencies {
     compile "org.lwjgl:lwjgl-platform:${lwjglVersion}:natives-windows"
     compile "org.lwjgl:lwjgl-platform:${lwjglVersion}:natives-linux"
     compile "org.lwjgl:lwjgl-platform:${lwjglVersion}:natives-osx"
-    compile "org.encog:encog-core:3.4.0-SNAPSHOT"
     compile "org.joml:joml:1.8.2"
+    compile "org.l33tlabs.twl:pngdecoder:1.0"
 }
 
 jar{
