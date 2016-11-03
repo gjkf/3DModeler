@@ -3,8 +3,6 @@
  */
 package com.gjkf.modeler.engine;
 
-import static com.sun.prism.impl.Disposer.cleanUp;
-
 /**
  * This is the main class. <p>
  * Here happens the game loop ({@link #gameLoop()}) and all the relevant updates.
@@ -35,7 +33,11 @@ public class Engine implements Runnable{
     /**
      * An interface for the game logic.
      */
-    private final IGameLogic gameLogic;
+    private final ILogic logic;
+    /**
+     * The mouse input handle.
+     */
+    private final MouseInput mouseInput;
 
     /**
      * Constructs the Engine object.
@@ -44,13 +46,14 @@ public class Engine implements Runnable{
      * @param width The width of the window
      * @param height The height of the window
      * @param vSync Whether or not use vSync
-     * @param gameLogic A class extending {@link IGameLogic}
+     * @param logic A class extending {@link ILogic}
      */
 
-    public Engine(String windowTitle, int width, int height, boolean vSync, IGameLogic gameLogic){
+    public Engine(String windowTitle, int width, int height, boolean vSync, ILogic logic){
         gameLoopThread = new Thread(this, "GAME_LOOP_THREAD");
         window = new Window(windowTitle, width, height, vSync);
-        this.gameLogic = gameLogic;
+        mouseInput = new MouseInput();
+        this.logic = logic;
         timer = new Timer();
     }
 
@@ -79,12 +82,12 @@ public class Engine implements Runnable{
         } catch (Exception excp) {
             excp.printStackTrace();
         }finally{
-            cleanUp();
+            logic.cleanup();
         }
     }
 
     /**
-     * Initializes the {@link #window}, the {@link #timer} and the {@link #gameLogic}.
+     * Initializes the {@link #window}, the {@link #timer}, the {@link #mouseInput} and the {@link #logic}.
      *
      * @throws Exception If any of the operations fail.
      */
@@ -92,7 +95,8 @@ public class Engine implements Runnable{
     protected void init() throws Exception {
         window.init();
         timer.init();
-        gameLogic.init(window);
+        mouseInput.init(window);
+        logic.init(window);
     }
 
     /**
@@ -141,21 +145,22 @@ public class Engine implements Runnable{
     }
 
     /**
-     * Retrieves the inputs from {@link #gameLogic}.
+     * Retrieves the inputs from {@link #logic}.
      */
 
     protected void input() {
-        gameLogic.input(window);
+        mouseInput.input(window);
+        logic.input(window, mouseInput);
     }
 
     /**
-     * Updates the {@link #gameLogic}.
+     * Updates the {@link #logic}.
      *
      * @param interval The frames passed.
      */
 
     protected void update(float interval) {
-        gameLogic.update(interval);
+        logic.update(interval, mouseInput);
     }
 
     /**
@@ -163,7 +168,7 @@ public class Engine implements Runnable{
      */
 
     protected void render() {
-        gameLogic.render(window);
+        logic.render(window);
         window.update();
     }
 

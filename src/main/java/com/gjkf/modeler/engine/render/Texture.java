@@ -11,25 +11,66 @@ import java.nio.ByteBuffer;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL30.glGenerateMipmap;
 
+/**
+ * Object representing a texture.
+ */
+
 public class Texture{
 
+    /**
+     * The ID of the texture.
+     */
     private final int id;
+
+    /**
+     * Creates a new texture calling {@link #loadTexture(String)}.
+     *
+     * @param fileName The path of the file.
+     *
+     * @throws Exception If the texture could not be read.
+     */
 
     public Texture(String fileName) throws Exception {
         this(loadTexture(fileName));
     }
 
+    /**
+     * Creates a texture given the OpenGL ID.
+     *
+     * @param id The ID.
+     */
+
     public Texture(int id) {
         this.id = id;
     }
+
+    /**
+     * Binds this texture.
+     */
 
     public void bind() {
         glBindTexture(GL_TEXTURE_2D, id);
     }
 
+    /**
+     * Gets the current ID.
+     *
+     * @return The ID.
+     */
+
     public int getId() {
         return id;
     }
+
+    /**
+     * Loads a new texture and returns its ID.
+     *
+     * @param fileName The path of the file.
+     *
+     * @return The ID of the new texture.
+     *
+     * @throws Exception If the texture could not be decoded.
+     */
 
     private static int loadTexture(String fileName) throws Exception {
         // Load Texture file

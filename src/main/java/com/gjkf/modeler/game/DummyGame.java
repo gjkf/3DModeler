@@ -3,32 +3,37 @@
  */
 package com.gjkf.modeler.game;
 
-import com.gjkf.modeler.engine.IGameLogic;
+import com.gjkf.modeler.engine.ILogic;
 import com.gjkf.modeler.engine.Item;
+import com.gjkf.modeler.engine.MouseInput;
 import com.gjkf.modeler.engine.Window;
+import com.gjkf.modeler.engine.render.Camera;
 import com.gjkf.modeler.engine.render.Mesh;
 import com.gjkf.modeler.engine.render.Renderer;
 import com.gjkf.modeler.engine.render.Texture;
+import org.joml.Vector2f;
 import org.joml.Vector3f;
 
 import static org.lwjgl.glfw.GLFW.*;
 
-public class DummyGame implements IGameLogic{
+public class DummyGame implements ILogic{
 
-    private int displxInc = 0;
+    private static final float MOUSE_SENSITIVITY = 0.2f;
 
-    private int displyInc = 0;
-
-    private int displzInc = 0;
-
-    private int scaleInc = 0;
+    private final Vector3f cameraInc;
 
     private final Renderer renderer;
 
     private Item[] items;
 
+    private final Camera camera;
+
+    private static final float CAMERA_POS_STEP = 0.05f;
+
     public DummyGame() {
         renderer = new Renderer();
+        camera = new Camera();
+        cameraInc = new Vector3f(0, 0, 0);
     }
 
     @Override
@@ -129,70 +134,63 @@ public class DummyGame implements IGameLogic{
                 // Bottom face
                 16, 18, 19, 17, 16, 19,
                 // Back face
-                4, 6, 7, 5, 4, 7,};
-
+                4, 6, 7, 5, 4, 7,
+        };
         Texture texture = new Texture("/textures/grassblock.png");
         Mesh mesh = new Mesh(positions, textCoords, indices, texture);
         Item item = new Item(mesh);
+        item.setScale(0.5f);
         item.setPosition(0, 0, -2);
-        items = new Item[]{item};
+        Item item1 = new Item(mesh);
+        item1.setScale(0.5f);
+        item1.setPosition(0.5f, 0.5f, -2);
+        Item item2 = new Item(mesh);
+        item2.setScale(0.5f);
+        item2.setPosition(0, 0, -2.5f);
+        Item item3 = new Item(mesh);
+        item3.setScale(0.5f);
+        item3.setPosition(0.5f, 0, -2.5f);
+        items = new Item[]{item, item1, item2, item3};
+
     }
 
     @Override
-    public void input(Window window) {
-        displyInc = 0;
-        displxInc = 0;
-        displzInc = 0;
-        scaleInc = 0;
-        if (window.isKeyPressed(GLFW_KEY_UP)) {
-            displyInc = 1;
-        } else if (window.isKeyPressed(GLFW_KEY_DOWN)) {
-            displyInc = -1;
-        } else if (window.isKeyPressed(GLFW_KEY_LEFT)) {
-            displxInc = -1;
-        } else if (window.isKeyPressed(GLFW_KEY_RIGHT)) {
-            displxInc = 1;
-        } else if (window.isKeyPressed(GLFW_KEY_A)) {
-            displzInc = -1;
-        } else if (window.isKeyPressed(GLFW_KEY_Q)) {
-            displzInc = 1;
-        } else if (window.isKeyPressed(GLFW_KEY_Z)) {
-            scaleInc = -1;
-        } else if (window.isKeyPressed(GLFW_KEY_X)) {
-            scaleInc = 1;
+    public void input(Window window, MouseInput mouseInput) {
+        cameraInc.set(0, 0, 0);
+        if (window.isKeyPressed(GLFW_KEY_W)) {
+            cameraInc.z = -1;
+        } else if (window.isKeyPressed(GLFW_KEY_S)) {
+            cameraInc.z = 1;
         }
+        if (window.isKeyPressed(GLFW_KEY_A)) {
+            cameraInc.x = -1;
+        } else if (window.isKeyPressed(GLFW_KEY_D)) {
+            cameraInc.x = 1;
+        }
+        if (window.isKeyPressed(GLFW_KEY_LEFT_SHIFT)) {
+            cameraInc.y = -1;
+        } else if (window.isKeyPressed(GLFW_KEY_SPACE)) {
+            cameraInc.y = 1;
+        }
+
     }
 
     @Override
-    public void update(float interval) {
-        for (Item item : items) {
-            // Update position
-            Vector3f itemPos = item.getPosition();
-            float posx = itemPos.x + displxInc * 0.01f;
-            float posy = itemPos.y + displyInc * 0.01f;
-            float posz = itemPos.z + displzInc * 0.01f;
-            item.setPosition(posx, posy, posz);
+    public void update(float interval, MouseInput mouseInput) {
+        // Update camera position
+        camera.movePosition(cameraInc.x * CAMERA_POS_STEP, cameraInc.y * CAMERA_POS_STEP, cameraInc.z * CAMERA_POS_STEP);
 
-            // Update scale
-            float scale = item.getScale();
-            scale += scaleInc * 0.05f;
-            if ( scale < 0 ) {
-                scale = 0;
-            }
-            item.setScale(scale);
-
-            // Update rotation angle
-            float rotation = item.getRotation().x + 1.5f;
-            if ( rotation > 360 ) {
-                rotation = 0;
-            }
-            item.setRotation(rotation, rotation, rotation);
+        // Update camera based on mouse
+        if (mouseInput.isLeftButtonPressed()) {
+            Vector2f rotVec = mouseInput.getDisplVec();
+            camera.moveRotation(rotVec.x * MOUSE_SENSITIVITY, rotVec.y * MOUSE_SENSITIVITY, 0);
         }
+
     }
 
     @Override
     public void render(Window window) {
-        renderer.render(window, items);
+        renderer.render(window, camera, items);
     }
 
     @Override

@@ -4,7 +4,7 @@
 package com.gjkf.modeler.game;
 
 import com.gjkf.modeler.engine.Engine;
-import com.gjkf.modeler.engine.IGameLogic;
+import com.gjkf.modeler.engine.ILogic;
 
 public class Main{
 
@@ -18,7 +18,7 @@ public class Main{
 
         try {
             boolean vSync = true;
-            IGameLogic gameLogic = new DummyGame();
+            ILogic gameLogic = new DummyGame();
             Engine gameEng = new Engine("Game", 1000, 1000, vSync, gameLogic);
             gameEng.start();
         } catch (Exception excp) {

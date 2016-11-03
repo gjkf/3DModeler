@@ -154,6 +154,16 @@ public class Window {
     }
 
     /**
+     * Returns the window ID
+     *
+     * @return The ID of this window
+     */
+
+    public long getWindowHandle(){
+        return windowHandle;
+    }
+
+    /**
      * Sets the background color.
      *
      * @param color The color.

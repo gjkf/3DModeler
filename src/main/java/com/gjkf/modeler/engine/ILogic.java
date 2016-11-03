@@ -8,7 +8,7 @@ package com.gjkf.modeler.engine;
  * <p>Implement this to create your own game.</p>
  */
 
-public interface IGameLogic {
+public interface ILogic {
 
     /**
      * Initializes the game logic
@@ -26,7 +26,7 @@ public interface IGameLogic {
      * @param window The current window.
      */
 
-    void input(Window window);
+    void input(Window window, MouseInput mouseInput);
 
     /**
      * Updates the game logic. Used for calculations.
@@ -34,7 +34,7 @@ public interface IGameLogic {
      * @param interval The frames passed.
      */
 
-    void update(float interval);
+    void update(float interval, MouseInput mouseInput);
 
     /**
      * Renders the game logic.

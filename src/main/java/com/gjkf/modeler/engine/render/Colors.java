@@ -3,6 +3,10 @@
  */
 package com.gjkf.modeler.engine.render;
 
+/**
+ * Enum to store some of the most used colors.
+ */
+
 public enum Colors{
 
 	WHITE(new Color4f(1f, 1f, 1f, 1f)),

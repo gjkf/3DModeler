@@ -18,21 +18,37 @@ import static org.lwjgl.opengl.GL11.*;
 public class Renderer {
 
     /**
-     * Field of View in Radians
+     * Field of View in Radians.
      */
     private static final float FOV = (float) Math.toRadians(60.0f);
-
+    /**
+     * The near distance of the frustum.
+     */
     private static final float Z_NEAR = 0.01f;
-
+    /**
+     * The far distance of the frustum
+     */
     private static final float Z_FAR = 1000.f;
-
+    /**
+     * Instance of {@link Transformation}
+     */
     private final Transformation transformation;
-
+    /**
+     * Instance of {@link ShaderProgram}
+     */
     private ShaderProgram shaderProgram;
 
     public Renderer() {
         transformation = new Transformation();
     }
+
+    /**
+     * Initializes the shader program.
+     *
+     * @param window The window.
+     *
+     * @throws Exception If the program could not create the shaders.
+     */
 
     public void init(Window window) throws Exception {
         // Create shader
@@ -43,15 +59,27 @@ public class Renderer {
 
         // Create uniforms for world and projection matrices and texture
         shaderProgram.createUniform("projectionMatrix");
-        shaderProgram.createUniform("worldMatrix");
+        shaderProgram.createUniform("modelViewMatrix");
         shaderProgram.createUniform("texture_sampler");
     }
+
+    /**
+     * Clears the OpenGL buffers.
+     */
 
     public void clear() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
 
-    public void render(Window window, Item[] items) {
+    /**
+     * Renders the objects considering the camera position.
+     *
+     * @param window The window.
+     * @param camera The camera.
+     * @param items The items to draw.
+     */
+
+    public void render(Window window, Camera camera, Item[] items) {
         clear();
 
         if ( window.isResized() ) {
@@ -65,21 +93,26 @@ public class Renderer {
         Matrix4f projectionMatrix = transformation.getProjectionMatrix(FOV, window.getWidth(), window.getHeight(), Z_NEAR, Z_FAR);
         shaderProgram.setUniform("projectionMatrix", projectionMatrix);
 
+        // Update view Matrix
+        Matrix4f viewMatrix = transformation.getViewMatrix(camera);
+
         shaderProgram.setUniform("texture_sampler", 0);
         // Render each gameItem
-        for(Item gameItem : items) {
-            // Set world matrix for this item
-            Matrix4f worldMatrix = transformation.getWorldMatrix(
-                    gameItem.getPosition(),
-                    gameItem.getRotation(),
-                    gameItem.getScale());
-            shaderProgram.setUniform("worldMatrix", worldMatrix);
+        for(Item item : items) {
+            // Set model view matrix for this item
+            Matrix4f modelViewMatrix = transformation.getModelViewMatrix(item, viewMatrix);
+            shaderProgram.setUniform("modelViewMatrix", modelViewMatrix);
             // Render the mes for this game item
-            gameItem.getMesh().render();
+            item.getMesh().render();
         }
 
         shaderProgram.unbind();
+
     }
+
+    /**
+     * Cleans up the resources used in the {@link #shaderProgram}
+     */
 
     public void cleanup() {
         if (shaderProgram != null) {
