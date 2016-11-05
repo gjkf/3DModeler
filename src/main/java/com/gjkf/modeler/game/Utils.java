@@ -7,6 +7,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Misc util class
@@ -36,5 +38,27 @@ public class Utils {
 
         return builder.toString();
     }
+
+    /**
+     * Reads all the lines of a file and returns them as a list.
+     *
+     * @param fileName The path of the file.
+     *
+     * @return The list containing each line.
+     *
+     * @throws Exception If anything went wrong.
+     */
+
+    public static List<String> readAllLines(String fileName) throws Exception {
+        List<String> list = new ArrayList<>();
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(Utils.class.getClass().getResourceAsStream(fileName)))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                list.add(line);
+            }
+        }
+        return list;
+    }
+
 
 }

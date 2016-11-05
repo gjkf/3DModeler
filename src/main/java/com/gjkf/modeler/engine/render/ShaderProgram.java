@@ -4,6 +4,7 @@
 package com.gjkf.modeler.engine.render;
 
 import org.joml.Matrix4f;
+import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
 
 import java.nio.FloatBuffer;
@@ -66,7 +67,19 @@ public class ShaderProgram {
     }
 
     /**
-     * Sets the valur of the given uniform.
+     * Sets the value of the given uniform.
+     *
+     * @param uniformName The uniform to reference.
+     * @param value The value.
+     */
+
+    public void setUniform(String uniformName, Vector3f value) {
+        glUniform3f(uniforms.get(uniformName), value.x, value.y, value.z );
+    }
+
+
+    /**
+     * Sets the value of the given uniform.
      *
      * @param uniformName The uniform to reference.
      * @param value The value.
@@ -80,7 +93,7 @@ public class ShaderProgram {
     }
 
     /**
-     * Sets the valur of the given uniform.
+     * Sets the value of the given uniform.
      *
      * @param uniformName The uniform to reference.
      * @param value The value.
