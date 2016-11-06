@@ -10,7 +10,21 @@ import org.joml.Vector3f;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Loads and reads a basic <tt>.obj</tt> file.
+ */
+
 public class OBJLoader {
+
+    /**
+     * Loads the mesh from a file.
+     *
+     * @param fileName The path of the file.
+     *
+     * @return The new mesh.
+     *
+     * @throws Exception If anything went wrong.
+     */
 
     public static Mesh loadMesh(String fileName) throws Exception {
         List<String> lines = Utils.readAllLines(fileName);
@@ -58,10 +72,20 @@ public class OBJLoader {
         return reorderLists(vertices, textures, normals, faces);
     }
 
-    private static Mesh reorderLists(List<Vector3f> posList, List<Vector2f> textCoordList,
-                                     List<Vector3f> normList, List<Face> facesList) {
+    /**
+     * Reorders the list of information.
+     *
+     * @param posList The list of the vertices' positions.
+     * @param textCoordList The list of the texture coordinates.
+     * @param normList The list of the normals.
+     * @param facesList The list of the faces.
+     *
+     * @return The new mesh.
+     */
 
-        List<Integer> indices = new ArrayList();
+    private static Mesh reorderLists(List<Vector3f> posList, List<Vector2f> textCoordList, List<Vector3f> normList, List<Face> facesList) {
+
+        List<Integer> indices = new ArrayList<>();
         // Create position array in the order it has been declared
         float[] posArr = new float[posList.size() * 3];
         int i = 0;
@@ -81,14 +105,12 @@ public class OBJLoader {
                         indices, textCoordArr, normArr);
             }
         }
-        int[] indicesArr = new int[indices.size()];
+        int[] indicesArr;
         indicesArr = indices.stream().mapToInt((Integer v) -> v).toArray();
         return new Mesh(posArr, textCoordArr, normArr, indicesArr);
     }
 
-    private static void processFaceVertex(IdxGroup indices, List<Vector2f> textCoordList,
-                                          List<Vector3f> normList, List<Integer> indicesList,
-                                          float[] texCoordArr, float[] normArr) {
+    private static void processFaceVertex(IdxGroup indices, List<Vector2f> textCoordList, List<Vector3f> normList, List<Integer> indicesList, float[] texCoordArr, float[] normArr) {
 
         // Set index for vertex coordinates
         int posIndex = indices.idxPos;

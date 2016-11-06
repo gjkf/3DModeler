@@ -3,7 +3,6 @@
  */
 package com.gjkf.modeler.engine.render;
 
-import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL15;
 
@@ -17,9 +16,7 @@ import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
 import static org.lwjgl.opengl.GL13.glActiveTexture;
 import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL20.*;
-import static org.lwjgl.opengl.GL30.glBindVertexArray;
-import static org.lwjgl.opengl.GL30.glDeleteVertexArrays;
-import static org.lwjgl.opengl.GL30.glGenVertexArrays;
+import static org.lwjgl.opengl.GL30.*;
 
 /**
  * Class representing a mesh.
@@ -28,10 +25,6 @@ import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 
 public class Mesh {
 
-    /**
-     * By default the color will be white.
-     */
-    private static final Vector3f DEFAULT_COLOUR = new Vector3f(1.0f, 1.0f, 1.0f);
     /**
      * The ID of the VAO used.
      */
@@ -45,14 +38,9 @@ public class Mesh {
      */
     private final int vertexCount;
     /**
-     * The texture to use.
+     * The material.
      */
-    private Texture texture;
-    /**
-     * The color.
-     */
-    private Vector3f colour;
-
+    private Material material;
 
     /**
      * The mesh constructor.
@@ -64,7 +52,6 @@ public class Mesh {
      */
 
     public Mesh(float[] positions, float[] textCoords, float[] normals, int[] indices) {
-        colour = DEFAULT_COLOUR;
         vertexCount = indices.length;
         vboIdList = new ArrayList<>();
 
@@ -111,74 +98,46 @@ public class Mesh {
     }
 
     /**
-     * Whether or not this is textured.
+     * Getter for property 'vaoId'.
      *
-     * @return {@link #texture} != null
-     */
-
-    public boolean isTextured() {
-        return this.texture != null;
-    }
-
-    /**
-     * Gets the texture.
-     *
-     * @return The current texture
-     */
-
-    public Texture getTexture() {
-        return this.texture;
-    }
-
-    /**
-     * Sets the texture.
-     *
-     * @param texture The texture.
-     */
-
-    public void setTexture(Texture texture) {
-        this.texture = texture;
-    }
-
-    /**
-     * Sets the color.
-     *
-     * @param colour The color.
-     */
-
-    public void setColour(Vector3f colour) {
-        this.colour = colour;
-    }
-
-    /**
-     * Gets the color.
-     *
-     * @return The color.
-     */
-
-    public Vector3f getColour() {
-        return this.colour;
-    }
-
-
-    /**
-     * Returns the ID of the VAO.
-     *
-     * @return The {@link #vaoId}.
+     * @return Value for property 'vaoId'.
      */
 
     public int getVaoId() {
         return vaoId;
     }
 
+
     /**
-     * Returns the number of vertices.
+     * Getter for property 'vertexCount'.
      *
-     * @return The {@link #vertexCount}.
+     * @return Value for property 'vertexCount'.
      */
 
     public int getVertexCount() {
         return vertexCount;
+    }
+
+
+    /**
+     * Getter for property 'material'.
+     *
+     * @return Value for property 'material'.
+     */
+
+    public Material getMaterial(){
+        return material;
+    }
+
+
+    /**
+     * Setter for property 'material'.
+     *
+     * @param material Value to set for property 'material'.
+     */
+
+    public void setMaterial(Material material){
+        this.material = material;
     }
 
     /**
@@ -186,6 +145,7 @@ public class Mesh {
      */
 
     public void render() {
+        Texture texture = material.getTexture();
         if (texture != null) {
             // Activate firs texture bank
             glActiveTexture(GL_TEXTURE0);
@@ -221,6 +181,7 @@ public class Mesh {
         vboIdList.forEach(GL15::glDeleteBuffers);
 
         // Delete the texture
+        Texture texture = material.getTexture();
         if (texture != null) {
             texture.cleanup();
         }
@@ -229,5 +190,4 @@ public class Mesh {
         glBindVertexArray(0);
         glDeleteVertexArrays(vaoId);
     }
-
 }

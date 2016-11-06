@@ -43,9 +43,9 @@ public class Camera {
     }
 
     /**
-     * Returns the {@link #position} vector.
+     * Getter for property 'position'.
      *
-     * @return The vector.
+     * @return Value for property 'position'.
      */
 
     public Vector3f getPosition() {

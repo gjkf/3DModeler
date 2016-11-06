@@ -3,6 +3,9 @@
  */
 package com.gjkf.modeler.engine.render;
 
+import com.gjkf.modeler.engine.render.lights.DirectionalLight;
+import com.gjkf.modeler.engine.render.lights.PointLight;
+import com.gjkf.modeler.engine.render.lights.SpotLight;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
@@ -101,6 +104,214 @@ public class ShaderProgram {
 
     public void setUniform(String uniformName, int value) {
         glUniform1i(uniforms.get(uniformName), value);
+    }
+
+    /**
+     * Sets the value of the given uniform.
+     *
+     * @param uniformName The uniform to reference.
+     * @param value The value.
+     */
+
+    public void setUniform(String uniformName, float value) {
+        glUniform1f(uniforms.get(uniformName), value);
+    }
+
+    /**
+     * Sets the value of the given uniform.
+     *
+     * @param uniformName The uniform to reference.
+     * @param dirLight The value.
+     */
+
+    public void setUniform(String uniformName, DirectionalLight dirLight) {
+        setUniform(uniformName + ".colour", dirLight.getColor() );
+        setUniform(uniformName + ".direction", dirLight.getDirection());
+        setUniform(uniformName + ".intensity", dirLight.getIntensity());
+    }
+
+    /**
+     * Creates the uniforms for the array of lights.
+     *
+     * @param uniformName The name.
+     * @param size The size of the array.
+     *
+     * @throws Exception If anything went wrong.
+     */
+
+    public void createPointLightListUniform(String uniformName, int size) throws Exception {
+        for (int i = 0; i < size; i++) {
+            createPointLightUniform(uniformName + "[" + i + "]");
+        }
+    }
+
+    /**
+     * Sets the uniforms of the array.
+     *
+     * @param uniformName The name.
+     * @param pointLights The lights.
+     */
+
+    public void setUniform(String uniformName, PointLight[] pointLights) {
+        int numLights = pointLights != null ? pointLights.length : 0;
+        for (int i = 0; i < numLights; i++) {
+            setUniform(uniformName, pointLights[i], i);
+        }
+    }
+
+    /**
+     * Sets the uniform for the given spot light.
+     *
+     * @param uniformName The name.
+     * @param pointLight The light.
+     * @param pos The position in the array.
+     */
+
+    public void setUniform(String uniformName, PointLight pointLight, int pos) {
+        setUniform(uniformName + "[" + pos + "]", pointLight);
+    }
+
+    /**
+     * Sets the value of the given uniform.
+     *
+     * @param uniformName The uniform to reference.
+     * @param pointLight The value.
+     */
+
+    public void setUniform(String uniformName, PointLight pointLight) {
+        setUniform(uniformName + ".colour", pointLight.getColor());
+        setUniform(uniformName + ".position", pointLight.getPosition());
+        setUniform(uniformName + ".intensity", pointLight.getIntensity());
+        PointLight.Attenuation att = pointLight.getAttenuation();
+        setUniform(uniformName + ".att.constant", att.getConstant());
+        setUniform(uniformName + ".att.linear", att.getLinear());
+        setUniform(uniformName + ".att.exponent", att.getExponent());
+    }
+
+    /**
+     * Creates the uniforms for the array of lights.
+     *
+     * @param uniformName The name.
+     * @param size The size of the array.
+     *
+     * @throws Exception If anything went wrong.
+     */
+
+    public void createSpotLightListUniform(String uniformName, int size) throws Exception {
+        for (int i = 0; i < size; i++) {
+            createSpotLightUniform(uniformName + "[" + i + "]");
+        }
+    }
+
+    /**
+     * Sets the value of the given uniform.
+     *
+     * @param uniformName The uniform to reference.
+     * @param spotLight The value.
+     */
+
+    public void setUniform(String uniformName, SpotLight spotLight) {
+        setUniform(uniformName + ".pl", spotLight.getPointLight() );
+        setUniform(uniformName + ".conedir", spotLight.getConeDirection());
+        setUniform(uniformName + ".cutoff", spotLight.getCutOff());
+    }
+
+    /**
+     * Sets the uniform for the given spot light.
+     *
+     * @param uniformName The name.
+     * @param spotLight The light.
+     * @param pos The position in the array.
+     */
+
+    public void setUniform(String uniformName, SpotLight spotLight, int pos) {
+        setUniform(uniformName + "[" + pos + "]", spotLight);
+    }
+
+    /**
+     * Sets the uniforms of the array.
+     *
+     * @param uniformName The name.
+     * @param spotLights The lights.
+     */
+
+    public void setUniform(String uniformName, SpotLight[] spotLights) {
+        int numLights = spotLights != null ? spotLights.length : 0;
+        for (int i = 0; i < numLights; i++) {
+            setUniform(uniformName, spotLights[i], i);
+        }
+    }
+
+    /**
+     * Sets the value of the given uniform.
+     *
+     * @param uniformName The uniform to reference.
+     * @param material The value.
+     */
+
+    public void setUniform(String uniformName, Material material) {
+        setUniform(uniformName + ".colour", material.getColour() );
+        setUniform(uniformName + ".useColour", material.isTextured() ? 0 : 1);
+        setUniform(uniformName + ".reflectance", material.getReflectance());
+    }
+
+    /**
+     * Creates the uniform for a point light.
+     *
+     * @param uniformName The name.
+     *
+     * @throws Exception If anything went wrong.
+     */
+
+    public void createPointLightUniform(String uniformName) throws Exception {
+        createUniform(uniformName + ".colour");
+        createUniform(uniformName + ".position");
+        createUniform(uniformName + ".intensity");
+        createUniform(uniformName + ".att.constant");
+        createUniform(uniformName + ".att.linear");
+        createUniform(uniformName + ".att.exponent");
+    }
+
+    /**
+     * Creates the uniform for a material.
+     *
+     * @param uniformName The name.
+     *
+     * @throws Exception If anything went wrong.
+     */
+
+    public void createMaterialUniform(String uniformName) throws Exception {
+        createUniform(uniformName + ".colour");
+        createUniform(uniformName + ".useColour");
+        createUniform(uniformName + ".reflectance");
+    }
+
+    /**
+     * Creates the uniform for a light.
+     *
+     * @param uniformName The name.
+     *
+     * @throws Exception If anything went wrong.
+     */
+
+    public void createDirectionalLightUniform(String uniformName) throws Exception {
+        createUniform(uniformName + ".colour");
+        createUniform(uniformName + ".direction");
+        createUniform(uniformName + ".intensity");
+    }
+
+    /**
+     * Creates the uniform for a light.
+     *
+     * @param uniformName The name.
+     *
+     * @throws Exception If anything went wrong.
+     */
+
+    public void createSpotLightUniform(String uniformName) throws Exception {
+        createPointLightUniform(uniformName  + ".pl");
+        createUniform(uniformName + ".conedir");
+        createUniform(uniformName + ".cutoff");
     }
 
     /**

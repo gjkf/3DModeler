@@ -53,9 +53,9 @@ public class Texture{
     }
 
     /**
-     * Gets the current ID.
+     * Getter for property 'id'.
      *
-     * @return The ID.
+     * @return Value for property 'id'.
      */
 
     public int getId() {
