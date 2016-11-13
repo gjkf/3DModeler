@@ -8,18 +8,16 @@ import com.gjkf.modeler.engine.IHud;
 import com.gjkf.modeler.engine.Item;
 import com.gjkf.modeler.engine.TextItem;
 import com.gjkf.modeler.engine.Window;
-import com.gjkf.modeler.engine.render.Material;
-import com.gjkf.modeler.engine.render.Mesh;
-import com.gjkf.modeler.engine.render.OBJLoader;
+import com.gjkf.modeler.engine.render.*;
 import org.joml.Vector3f;
+
+import java.awt.*;
 
 public class Hud implements IHud{
 
-    private static final int FONT_COLS = 16;
+    private static final Font FONT = new Font("Arial", Font.ITALIC, 40);
 
-    private static final int FONT_ROWS = 16;
-
-    private static final String FONT_TEXTURE = "/textures/font_texture.png";
+    private static final String CHARSET = "ISO-8859-1";
 
     private final Item[] items;
 
@@ -29,8 +27,9 @@ public class Hud implements IHud{
 
 
     public Hud(String statusText) throws Exception {
-        this.statusTextItem = new TextItem(statusText, FONT_TEXTURE, FONT_COLS, FONT_ROWS);
-        this.statusTextItem.getMesh().getMaterial().setColour(new Vector3f(1, 1, 1));
+        FontTexture fontTexture = new FontTexture(FONT, CHARSET);
+        this.statusTextItem = new TextItem(statusText, fontTexture);
+        this.statusTextItem.getMesh().getMaterial().setColour(Colors.PURPLE.toVector());
 
         // Create compass
         Mesh mesh = OBJLoader.loadMesh("/models/compass.obj");
