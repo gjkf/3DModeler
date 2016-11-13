@@ -4,7 +4,6 @@
 package com.gjkf.modeler.engine.render;
 
 import de.matthiasmann.twl.utils.PNGDecoder;
-import de.matthiasmann.twl.utils.PNGDecoder.Format;
 
 import java.nio.ByteBuffer;
 
@@ -18,35 +17,69 @@ import static org.lwjgl.opengl.GL30.glGenerateMipmap;
 public class Texture{
 
     /**
-     * The ID of the texture.
+     * The ID of the texture
      */
     private final int id;
-
     /**
-     * Creates a new texture calling {@link #loadTexture(String)}.
-     *
-     * @param fileName The path of the file.
-     *
-     * @throws Exception If the texture could not be read.
+     * The width.
      */
+    private final int width;
+    /**
+     * The height.
+     */
+    private final int height;
 
     public Texture(String fileName) throws Exception {
-        this(loadTexture(fileName));
+
+        // Load Texture file
+        PNGDecoder decoder = new PNGDecoder(Texture.class.getResourceAsStream(fileName));
+
+        this.width = decoder.getWidth();
+        this.height = decoder.getHeight();
+
+        // Load texture contents into a byte buffer
+        ByteBuffer buf = ByteBuffer.allocateDirect(4 * decoder.getWidth() * decoder.getHeight());
+        decoder.decode(buf, decoder.getWidth() * 4, PNGDecoder.Format.RGBA);
+        buf.flip();
+
+        // Create a new OpenGL texture
+        int textureId = glGenTextures();
+        // Bind the texture
+        glBindTexture(GL_TEXTURE_2D, textureId);
+
+        // Tell OpenGL how to unpack the RGBA bytes. Each component is 1 byte size
+        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        // Upload the texture data
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, decoder.getWidth(), decoder.getHeight(), 0,
+                GL_RGBA, GL_UNSIGNED_BYTE, buf);
+        // Generate Mip Map
+        glGenerateMipmap(GL_TEXTURE_2D);
+
+        this.id = textureId;
     }
 
     /**
-     * Creates a texture given the OpenGL ID.
+     * Getter for property 'width'.
      *
-     * @param id The ID.
+     * @return Value for property 'width'.
      */
 
-    public Texture(int id) {
-        this.id = id;
+    public int getWidth() {
+        return this.width;
     }
 
     /**
-     * Binds this texture.
+     * Getter for property 'height'.
+     *
+     * @return Value for property 'height'.
      */
+
+    public int getHeight() {
+        return this.height;
+    }
 
     public void bind() {
         glBindTexture(GL_TEXTURE_2D, id);
@@ -62,48 +95,8 @@ public class Texture{
         return id;
     }
 
-    /**
-     * Loads a new texture and returns its ID.
-     *
-     * @param fileName The path of the file.
-     *
-     * @return The ID of the new texture.
-     *
-     * @throws Exception If the texture could not be decoded.
-     */
-
-    private static int loadTexture(String fileName) throws Exception {
-        // Load Texture file
-        PNGDecoder decoder = new PNGDecoder(Texture.class.getResourceAsStream(fileName));
-
-        // Load texture contents into a byte buffer
-        ByteBuffer buf = ByteBuffer.allocateDirect(
-                4 * decoder.getWidth() * decoder.getHeight());
-        decoder.decode(buf, decoder.getWidth() * 4, Format.RGBA);
-        buf.flip();
-
-        // Create a new OpenGL texture
-        int textureId = glGenTextures();
-        // Bind the texture
-        glBindTexture(GL_TEXTURE_2D, textureId);
-
-        // Tell OpenGL how to unpack the RGBA bytes. Each component is 1 byte size
-        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-
-        //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-        // Upload the texture data
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, decoder.getWidth(), decoder.getHeight(), 0,
-                GL_RGBA, GL_UNSIGNED_BYTE, buf);
-        // Generate Mip Map
-        glGenerateMipmap(GL_TEXTURE_2D);
-        return textureId;
-    }
-
     public void cleanup() {
         glDeleteTextures(id);
     }
-
 
 }

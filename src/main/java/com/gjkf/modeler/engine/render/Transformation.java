@@ -25,6 +25,10 @@ public class Transformation {
      * The view matrix.
      */
     private final Matrix4f viewMatrix;
+    /**
+     * The orthographic matrix.
+     */
+    private final Matrix4f orthoMatrix;
 
     /**
      * Creates the new empty matrices.
@@ -34,6 +38,7 @@ public class Transformation {
         projectionMatrix = new Matrix4f();
         modelViewMatrix = new Matrix4f();
         viewMatrix = new Matrix4f();
+        orthoMatrix = new Matrix4f();
     }
 
     /**
@@ -94,6 +99,45 @@ public class Transformation {
                 scale(item.getScale());
         Matrix4f viewCurr = new Matrix4f(viewMatrix);
         return viewCurr.mul(modelViewMatrix);
+    }
+
+    /**
+     * Creates a new orthogonal matrix.
+     *
+     * @param left The left coordinate.
+     * @param right The right coordinate.
+     * @param bottom The bottom coordinate.
+     * @param top The top coordinate.
+     *
+     * @return The new matrix.
+     */
+
+    public final Matrix4f getOrthoProjectionMatrix(float left, float right, float bottom, float top) {
+        orthoMatrix.identity();
+        orthoMatrix.setOrtho2D(left, right, bottom, top);
+        return orthoMatrix;
+    }
+
+    /**
+     * Creates a new matrix combining a orthogonal, projection and model matrix.
+     *
+     * @param item The item.
+     * @param orthoMatrix The matrix.
+     *
+     * @return The new matrix.
+     */
+
+    public Matrix4f getOrtoProjModelMatrix(Item item, Matrix4f orthoMatrix) {
+        Vector3f rotation = item.getRotation();
+        Matrix4f modelMatrix = new Matrix4f();
+        modelMatrix.identity().translate(item.getPosition()).
+                rotateX((float)Math.toRadians(-rotation.x)).
+                rotateY((float)Math.toRadians(-rotation.y)).
+                rotateZ((float)Math.toRadians(-rotation.z)).
+                scale(item.getScale());
+        Matrix4f orthoMatrixCurr = new Matrix4f(orthoMatrix);
+        orthoMatrixCurr.mul(modelMatrix);
+        return orthoMatrixCurr;
     }
 
 }

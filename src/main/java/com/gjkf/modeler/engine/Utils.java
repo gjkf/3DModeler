@@ -1,7 +1,7 @@
 /*
  * Created by Davide Cossu (gjkf), 11/1/2016
  */
-package com.gjkf.modeler.game;
+package com.gjkf.modeler.engine;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -60,5 +60,21 @@ public class Utils {
         return list;
     }
 
+    /**
+     * Transforms a list into an array.
+     *
+     * @param list The original list.
+     *
+     * @return The new array.
+     */
+
+    public static float[] listToArray(List<Float> list) {
+        int size = list != null ? list.size() : 0;
+        float[] floatArr = new float[size];
+        for (int i = 0; i < size; i++) {
+            floatArr[i] = list.get(i);
+        }
+        return floatArr;
+    }
 
 }

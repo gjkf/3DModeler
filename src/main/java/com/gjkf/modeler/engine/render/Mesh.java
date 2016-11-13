@@ -169,10 +169,6 @@ public class Mesh {
         glBindTexture(GL_TEXTURE_2D, 0);
     }
 
-    /**
-     * Cleans up the resources used for the rendering.
-     */
-
     public void cleanUp() {
         glDisableVertexAttribArray(0);
 
@@ -185,6 +181,18 @@ public class Mesh {
         if (texture != null) {
             texture.cleanup();
         }
+
+        // Delete the VAO
+        glBindVertexArray(0);
+        glDeleteVertexArrays(vaoId);
+    }
+
+    public void deleteBuffers() {
+        glDisableVertexAttribArray(0);
+
+        // Delete the VBOs
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        vboIdList.forEach(GL15::glDeleteBuffers);
 
         // Delete the VAO
         glBindVertexArray(0);

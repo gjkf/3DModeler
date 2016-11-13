@@ -3,6 +3,8 @@
  */
 package com.gjkf.modeler.engine.render;
 
+import org.joml.Vector3f;
+
 /**
  * Enum to store some of the most used colors.
  */
@@ -14,6 +16,7 @@ public enum Colors{
 	RED(new Color4f(1f, 0f, 0f, 1f)),
 	GREEN(new Color4f(0f, 1f, 0f, 1f)),
 	BLUE(new Color4f(0f, 0f, 1f, 1f)),
+    PURPLE(new Color4f(1f, 0f, 1f, 1f)),
 	NULL(null);
 
 	public final Color4f color;
@@ -21,5 +24,9 @@ public enum Colors{
 	Colors(Color4f Color4f){
 		this.color = Color4f;
 	}
+
+	public Vector3f toVector(){
+        return new Vector3f(this.color.r, this.color.g, this.color.b);
+    }
 
 }

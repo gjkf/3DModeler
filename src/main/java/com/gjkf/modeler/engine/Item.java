@@ -15,7 +15,7 @@ public class Item {
     /**
      * The mesh of this item.
      */
-    private final Mesh mesh;
+    private Mesh mesh;
     /**
      * The position in the world.
      */
@@ -29,6 +29,14 @@ public class Item {
      */
     private final Vector3f rotation;
 
+    /** Constructs a new Item. */
+
+    public Item(){
+        position = new Vector3f(0, 0, 0);
+        scale = 1;
+        rotation = new Vector3f(0, 0, 0);
+    }
+
     /**
      * Creates a new item with position and rotation like <tt>new Vector3f(0,0,0)</tt>
      *
@@ -36,10 +44,8 @@ public class Item {
      */
 
     public Item(Mesh mesh) {
+        this();
         this.mesh = mesh;
-        position = new Vector3f(0, 0, 0);
-        scale = 1;
-        rotation = new Vector3f(0, 0, 0);
     }
 
     /**
@@ -118,5 +124,15 @@ public class Item {
 
     public Mesh getMesh() {
         return mesh;
+    }
+
+    /**
+     * Setter for property 'mesh'.
+     *
+     * @param newMesh Value to set for property 'mesh'.
+     */
+
+    public void setMesh(Mesh newMesh){
+        mesh = newMesh;
     }
 }

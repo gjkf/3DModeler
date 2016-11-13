@@ -28,21 +28,11 @@ public class Material {
      */
     private Texture texture;
 
-    /**
-     * Constructs a new Material.
-     */
-
+    /** Constructs a new Material. */
     public Material() {
         colour = DEFAULT_COLOUR;
         reflectance = 0;
     }
-
-    /**
-     * Constructs a new Material.
-     *
-     * @param colour The color.
-     * @param reflectance The reflectance.
-     */
 
     public Material(Vector3f colour, float reflectance) {
         this();
@@ -50,12 +40,10 @@ public class Material {
         this.reflectance = reflectance;
     }
 
-    /**
-     * Constructs a new Material.
-     *
-     * @param texture The texture.
-     * @param reflectance The reflectance.
-     */
+    public Material(Texture texture) {
+        this();
+        this.texture = texture;
+    }
 
     public Material(Texture texture, float reflectance) {
         this();
