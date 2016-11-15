@@ -49,6 +49,10 @@ public class Renderer {
      */
     private ShaderProgram hudShaderProgram;
     /**
+     * The shader program for the sky box.
+     */
+    private ShaderProgram skyBoxShaderProgram;
+    /**
      * The specular power.
      */
     private float specularPower;
@@ -76,6 +80,7 @@ public class Renderer {
     public void init() throws Exception {
         setupSceneShader();
         setupHudShader();
+        setupSkyBoxShader();
     }
 
     /**
@@ -124,6 +129,24 @@ public class Renderer {
     }
 
     /**
+     * Sets up the program for the sky box.
+     *
+     * @throws Exception If anything went wrong.
+     */
+
+    private void setupSkyBoxShader() throws Exception {
+        skyBoxShaderProgram = new ShaderProgram();
+        skyBoxShaderProgram.createVertexShader(Utils.loadResource("shaders/skyBoxVertex.glsl"));
+        skyBoxShaderProgram.createFragmentShader(Utils.loadResource("shaders/skyBoxFragment.glsl"));
+        skyBoxShaderProgram.link();
+
+        skyBoxShaderProgram.createUniform("projectionMatrix");
+        skyBoxShaderProgram.createUniform("modelViewMatrix");
+        skyBoxShaderProgram.createUniform("texture_sampler");
+        skyBoxShaderProgram.createUniform("ambientLight");
+    }
+
+    /**
      * Clears the OpenGL buffers.
      */
 
@@ -136,22 +159,22 @@ public class Renderer {
      *
      * @param window The window.
      * @param camera The camera.
-     * @param items The items to draw.
-     * @param sceneLight The lights.
+     * @param scene The scene.
      * @param hud The hud.
      */
 
-    public void render(Window window, Camera camera, Item[] items, SceneLight sceneLight, IHud hud) {
+    public void render(Window window, Camera camera, Scene scene, IHud hud) {
         clear();
 
-        if(window.isResized()){
+        if ( window.isResized() ) {
             glViewport(0, 0, window.getWidth(), window.getHeight());
             window.setResized(false);
         }
 
-        renderScene(window, camera, items, sceneLight);
-
+        renderScene(window, camera, scene);
+        renderSkyBox(window, camera, scene);
         renderHud(window, hud);
+
     }
 
     /**
@@ -159,12 +182,10 @@ public class Renderer {
      *
      * @param window The window.
      * @param camera The camera.
-     * @param items The items to be drawn.
-     * @param sceneLight The scene lighting.
+     * @param scene The scene.
      */
 
-    public void renderScene(Window window, Camera camera, Item[] items, SceneLight sceneLight) {
-
+    public void renderScene(Window window, Camera camera, Scene scene) {
         sceneShaderProgram.bind();
 
         // Update projection Matrix
@@ -174,10 +195,12 @@ public class Renderer {
         // Update view Matrix
         Matrix4f viewMatrix = transformation.getViewMatrix(camera);
 
+        SceneLight sceneLight = scene.getSceneLight();
         renderLights(viewMatrix, sceneLight);
 
         sceneShaderProgram.setUniform("texture_sampler", 0);
         // Render each gameItem
+        Item[] items = scene.getItems();
         for (Item item : items) {
             Mesh mesh = item.getMesh();
             // Set model view matrix for this item
@@ -270,6 +293,36 @@ public class Renderer {
         }
 
         hudShaderProgram.unbind();
+    }
+
+    /**
+     * Renders the sky box.
+     *
+     * @param window The window.
+     * @param camera The camera.
+     * @param scene The scene.
+     */
+
+    private void renderSkyBox(Window window, Camera camera, Scene scene) {
+        skyBoxShaderProgram.bind();
+
+        skyBoxShaderProgram.setUniform("texture_sampler", 0);
+
+        // Update projection Matrix
+        Matrix4f projectionMatrix = transformation.getProjectionMatrix(FOV, window.getWidth(), window.getHeight(), Z_NEAR, Z_FAR);
+        skyBoxShaderProgram.setUniform("projectionMatrix", projectionMatrix);
+        SkyBox skyBox = scene.getSkyBox();
+        Matrix4f viewMatrix = transformation.getViewMatrix(camera);
+        viewMatrix.m30(0);
+        viewMatrix.m31(0);
+        viewMatrix.m32(0);
+        Matrix4f modelViewMatrix = transformation.getModelViewMatrix(skyBox, viewMatrix);
+        skyBoxShaderProgram.setUniform("modelViewMatrix", modelViewMatrix);
+        skyBoxShaderProgram.setUniform("ambientLight", scene.getSceneLight().getAmbientLight());
+
+        scene.getSkyBox().getMesh().render();
+
+        skyBoxShaderProgram.unbind();
     }
 
     /**
