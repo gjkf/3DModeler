@@ -13,11 +13,14 @@ import com.gjkf.modeler.engine.render.lights.SceneLight;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
+import java.util.List;
+import java.util.Map;
+
 import static org.lwjgl.glfw.GLFW.*;
 
 public class DummyGame implements ILogic{
 
-    private static final float MOUSE_SENSITIVITY = 0.3f;
+    private static final float MOUSE_SENSITIVITY = 0.2f;
 
     private final Vector3f cameraInc;
 
@@ -27,11 +30,11 @@ public class DummyGame implements ILogic{
 
     private Scene scene;
 
+    private Hud hud;
+
     private float lightAngle;
 
     private static final float CAMERA_POS_STEP = 0.05f;
-
-    private Hud hud;
 
     public DummyGame() {
         renderer = new Renderer();
@@ -54,7 +57,7 @@ public class DummyGame implements ILogic{
         mesh.setMaterial(material);
 
         float blockScale = 0.5f;
-        float skyBoxScale = 50.0f;
+        float skyBoxScale = 30.0f;
         float extension = 2.0f;
 
         float startx = extension * (-skyBoxScale + blockScale);
@@ -64,7 +67,7 @@ public class DummyGame implements ILogic{
 
         float posx = startx;
         float posz = startz;
-        float incy = 0.0f;
+        float incy;
         int NUM_ROWS = (int)(extension * skyBoxScale * 2 / inc);
         int NUM_COLS = (int)(extension * skyBoxScale * 2/ inc);
         Item[] items  = new Item[NUM_ROWS * NUM_COLS];
@@ -184,10 +187,8 @@ public class DummyGame implements ILogic{
     @Override
     public void cleanup() {
         renderer.cleanup();
-        Item[] items = scene.getItems();
-        for (Item item : items) {
-            item.getMesh().cleanUp();
-        }
+        Map<Mesh, List<Item>> mapMeshes = scene.getGameMeshes();
+        mapMeshes.keySet().forEach(Mesh::cleanUp);
         hud.cleanup();
     }
 }

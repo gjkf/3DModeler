@@ -1,8 +1,9 @@
 /*
  * Created by Davide Cossu (gjkf), 11/1/2016
  */
-package com.gjkf.modeler.engine.render;
+package com.gjkf.modeler.engine.render.shaders;
 
+import com.gjkf.modeler.engine.render.Material;
 import com.gjkf.modeler.engine.render.lights.DirectionalLight;
 import com.gjkf.modeler.engine.render.lights.PointLight;
 import com.gjkf.modeler.engine.render.lights.SpotLight;
@@ -38,7 +39,7 @@ public class ShaderProgram {
     /**
      * A map containing all the uniforms that will be passed to the shaders.
      */
-    private final Map<String, Integer> uniforms;
+    private final Map<String, UniformData> uniforms;
 
     /**
      * Creates an new program.
@@ -64,9 +65,9 @@ public class ShaderProgram {
     public void createUniform(String uniformName) throws Exception {
         int uniformLocation = glGetUniformLocation(programId, uniformName);
         if (uniformLocation < 0) {
-            throw new Exception ("Could not find uniform:" + uniformName);
+            throw new Exception("Could not find uniform:" + uniformName);
         }
-        uniforms.put(uniformName, uniformLocation);
+        uniforms.put(uniformName, new UniformData(uniformLocation));
     }
 
     /**
@@ -77,7 +78,11 @@ public class ShaderProgram {
      */
 
     public void setUniform(String uniformName, Vector3f value) {
-        glUniform3f(uniforms.get(uniformName), value.x, value.y, value.z );
+        UniformData uniformData = uniforms.get(uniformName);
+        if (uniformData == null) {
+            throw new RuntimeException("Uniform [" + uniformName + "] has nor been created");
+        }
+        glUniform3f(uniformData.getUniformLocation(), value.x, value.y, value.z);
     }
 
 
@@ -89,10 +94,19 @@ public class ShaderProgram {
      */
 
     public void setUniform(String uniformName, Matrix4f value) {
+        UniformData uniformData = uniforms.get(uniformName);
+        if (uniformData == null) {
+            throw new RuntimeException("Uniform [" + uniformName + "] has nor been created");
+        }
+        // Check if float buffer has been created
+        FloatBuffer fb = uniformData.getFloatBuffer();
+        if (fb == null) {
+            fb = BufferUtils.createFloatBuffer(16);
+            uniformData.setFloatBuffer(fb);
+        }
         // Dump the matrix into a float buffer
-        FloatBuffer fb = BufferUtils.createFloatBuffer(16);
         value.get(fb);
-        glUniformMatrix4fv(uniforms.get(uniformName), false, fb);
+        glUniformMatrix4fv(uniformData.getUniformLocation(), false, fb);
     }
 
     /**
@@ -103,7 +117,11 @@ public class ShaderProgram {
      */
 
     public void setUniform(String uniformName, int value) {
-        glUniform1i(uniforms.get(uniformName), value);
+        UniformData uniformData = uniforms.get(uniformName);
+        if (uniformData == null) {
+            throw new RuntimeException("Uniform [" + uniformName + "] has nor been created");
+        }
+        glUniform1i(uniformData.getUniformLocation(), value);
     }
 
     /**
@@ -114,7 +132,11 @@ public class ShaderProgram {
      */
 
     public void setUniform(String uniformName, float value) {
-        glUniform1f(uniforms.get(uniformName), value);
+        UniformData uniformData = uniforms.get(uniformName);
+        if (uniformData == null) {
+            throw new RuntimeException("Uniform [" + uniformName + "] has nor been created");
+        }
+        glUniform1f(uniformData.getUniformLocation(), value);
     }
 
     /**

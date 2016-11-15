@@ -6,6 +6,11 @@ package com.gjkf.modeler.engine.render;
 
 import com.gjkf.modeler.engine.Item;
 
+/**
+ * Object representing a sky box.
+ * <p>Extends {@link Item} so it's easy to access utility methods.</p>
+ */
+
 public class SkyBox extends Item{
 
     public SkyBox(String objModel, String textureFile) throws Exception {

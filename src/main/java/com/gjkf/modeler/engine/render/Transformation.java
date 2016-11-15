@@ -8,7 +8,7 @@ import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
 /**
- * Utility class that provides methods to create <tt>projection matrices</tt> and <tt>view matrices</tt>.
+ * Utility class that provides methods to create matrices used in the rendering process.
  */
 
 public class Transformation {
@@ -17,6 +17,10 @@ public class Transformation {
      * The projection matrix.
      */
     private final Matrix4f projectionMatrix;
+    /**
+     * The model matrix.
+     */
+    private final Matrix4f modelMatrix;
     /**
      * The model view matrix.
      */
@@ -29,6 +33,11 @@ public class Transformation {
      * The orthographic matrix.
      */
     private final Matrix4f orthoMatrix;
+    /**
+     * The orthomodel matrix.
+     */
+    private final Matrix4f orthoModelMatrix;
+
 
     /**
      * Creates the new empty matrices.
@@ -36,24 +45,36 @@ public class Transformation {
 
     public Transformation() {
         projectionMatrix = new Matrix4f();
+        modelMatrix = new Matrix4f();
         modelViewMatrix = new Matrix4f();
         viewMatrix = new Matrix4f();
         orthoMatrix = new Matrix4f();
+        orthoModelMatrix = new Matrix4f();
     }
 
     /**
-     * Creates a new projection matrix.
+     * Getter for property 'projectionMatrix'.
      *
-     * @param fov The Field Of View.
+     * @return Value for property 'projectionMatrix'.
+     */
+
+    public Matrix4f getProjectionMatrix() {
+        return projectionMatrix;
+    }
+
+    /**
+     * Updates the {@link #projectionMatrix}.
+     *
+     * @param fov The Field Of View in radians.
      * @param width The width of the frustum.
      * @param height The height of the frustum.
      * @param zNear The near coordinate of the frustum.
      * @param zFar The far coordinate of the frustum.
      *
-     * @return The new matrix.
+     * @return The updated matrix.
      */
 
-    public final Matrix4f getProjectionMatrix(float fov, float width, float height, float zNear, float zFar) {
+    public Matrix4f updateProjectionMatrix(float fov, float width, float height, float zNear, float zFar) {
         float aspectRatio = width / height;
         projectionMatrix.identity();
         projectionMatrix.perspective(fov, aspectRatio, zNear, zFar);
@@ -61,14 +82,24 @@ public class Transformation {
     }
 
     /**
-     * Creates a new view matrix.
+     * Getter for property 'viewMatrix'.
      *
-     * @param camera The camera object.
-     *
-     * @return The new matrix.
+     * @return Value for property 'viewMatrix'.
      */
 
-    public Matrix4f getViewMatrix(Camera camera) {
+    public Matrix4f getViewMatrix() {
+        return viewMatrix;
+    }
+
+    /**
+     * Updates the {@link #viewMatrix}.
+     *
+     * @param camera The camera.
+     *
+     * @return The updated matrix.
+     */
+
+    public Matrix4f updateViewMatrix(Camera camera) {
         Vector3f cameraPos = camera.getPosition();
         Vector3f rotation = camera.getRotation();
 
@@ -82,27 +113,7 @@ public class Transformation {
     }
 
     /**
-     * Creates a new matrix for the model.
-     *
-     * @param item The item to be drawn.
-     * @param viewMatrix The view matrix.
-     *
-     * @return The new matrix.
-     */
-
-    public Matrix4f getModelViewMatrix(Item item, Matrix4f viewMatrix) {
-        Vector3f rotation = item.getRotation();
-        modelViewMatrix.identity().translate(item.getPosition()).
-                rotateX((float)Math.toRadians(-rotation.x)).
-                rotateY((float)Math.toRadians(-rotation.y)).
-                rotateZ((float)Math.toRadians(-rotation.z)).
-                scale(item.getScale());
-        Matrix4f viewCurr = new Matrix4f(viewMatrix);
-        return viewCurr.mul(modelViewMatrix);
-    }
-
-    /**
-     * Creates a new orthogonal matrix.
+     * Returns a orthographic matrix.
      *
      * @param left The left coordinate.
      * @param right The right coordinate.
@@ -119,25 +130,44 @@ public class Transformation {
     }
 
     /**
-     * Creates a new matrix combining a orthogonal, projection and model matrix.
+     * Builds a new model matrix multiplied by a view matrix.
      *
      * @param item The item.
-     * @param orthoMatrix The matrix.
+     * @param viewMatrix The view matrix.
      *
      * @return The new matrix.
      */
 
-    public Matrix4f getOrtoProjModelMatrix(Item item, Matrix4f orthoMatrix) {
+    public Matrix4f buildModelViewMatrix(Item item, Matrix4f viewMatrix) {
         Vector3f rotation = item.getRotation();
-        Matrix4f modelMatrix = new Matrix4f();
         modelMatrix.identity().translate(item.getPosition()).
                 rotateX((float)Math.toRadians(-rotation.x)).
                 rotateY((float)Math.toRadians(-rotation.y)).
                 rotateZ((float)Math.toRadians(-rotation.z)).
                 scale(item.getScale());
-        Matrix4f orthoMatrixCurr = new Matrix4f(orthoMatrix);
-        orthoMatrixCurr.mul(modelMatrix);
-        return orthoMatrixCurr;
+        modelViewMatrix.set(viewMatrix);
+        return modelViewMatrix.mul(modelMatrix);
+    }
+
+    /**
+     * Builds a orthographic matrix multiplied by the model matrix.
+     *
+     * @param item The item.
+     * @param orthoMatrix The orthographic matrix.
+     *
+     * @return The new matrix.
+     */
+
+    public Matrix4f buildOrtoProjModelMatrix(Item item, Matrix4f orthoMatrix) {
+        Vector3f rotation = item.getRotation();
+        modelMatrix.identity().translate(item.getPosition()).
+                rotateX((float) Math.toRadians(-rotation.x)).
+                rotateY((float) Math.toRadians(-rotation.y)).
+                rotateZ((float) Math.toRadians(-rotation.z)).
+                scale(item.getScale());
+        orthoModelMatrix.set(orthoMatrix);
+        orthoModelMatrix.mul(modelMatrix);
+        return orthoModelMatrix;
     }
 
 }

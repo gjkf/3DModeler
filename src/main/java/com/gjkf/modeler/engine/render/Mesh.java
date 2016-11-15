@@ -3,6 +3,7 @@
  */
 package com.gjkf.modeler.engine.render;
 
+import com.gjkf.modeler.engine.Item;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL15;
 
@@ -10,6 +11,7 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
@@ -141,12 +143,12 @@ public class Mesh {
     }
 
     /**
-     * Renders the mesh.
+     * Initializes the rendering operations.
      */
 
-    public void render() {
+    private void initRender(){
         Texture texture = material.getTexture();
-        if (texture != null) {
+        if(texture != null){
             // Activate firs texture bank
             glActiveTexture(GL_TEXTURE0);
             // Bind the texture
@@ -158,16 +160,60 @@ public class Mesh {
         glEnableVertexAttribArray(0);
         glEnableVertexAttribArray(1);
         glEnableVertexAttribArray(2);
+    }
 
-        glDrawElements(GL_TRIANGLES, getVertexCount(), GL_UNSIGNED_INT, 0);
+    /**
+     * Ends the rendering operations.
+     * <p>Restores the OpenGL state.</p>
+     */
 
+    private void endRender() {
         // Restore state
         glDisableVertexAttribArray(0);
         glDisableVertexAttribArray(1);
         glDisableVertexAttribArray(2);
         glBindVertexArray(0);
+
         glBindTexture(GL_TEXTURE_2D, 0);
     }
+
+    /**
+     * Draws the elements.
+     */
+
+    public void render() {
+        initRender();
+
+        glDrawElements(GL_TRIANGLES, getVertexCount(), GL_UNSIGNED_INT, 0);
+
+        endRender();
+    }
+
+    /**
+     * Renders a list of items.
+     * <p>The <tt>consumer</tt> parameter should be a lambda expression with any action that should</p>
+     * <p>happen before the actual rendering.</p>
+     *
+     * @param items The items to be rendered
+     * @param consumer Any action that needs to be done before rendering.
+     */
+
+    public void renderList(List<Item> items, Consumer<Item> consumer) {
+        initRender();
+
+        for(Item item : items){
+            // Set up data requiered by item
+            consumer.accept(item);
+            // Render this game item
+            glDrawElements(GL_TRIANGLES, getVertexCount(), GL_UNSIGNED_INT, 0);
+        }
+
+        endRender();
+    }
+
+    /**
+     * Cleans up the resources.
+     */
 
     public void cleanUp() {
         glDisableVertexAttribArray(0);
@@ -186,6 +232,10 @@ public class Mesh {
         glBindVertexArray(0);
         glDeleteVertexArrays(vaoId);
     }
+
+    /**
+     * Deletes the buffers.
+     */
 
     public void deleteBuffers() {
         glDisableVertexAttribArray(0);
