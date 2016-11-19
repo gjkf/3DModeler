@@ -2,11 +2,11 @@
  * Created by Davide Cossu (gjkf), 11/13/2016
  */
 
-package com.gjkf.modeler.game;
+package com.gjkf.modeler.test.game;
 
 import com.gjkf.modeler.engine.IHud;
-import com.gjkf.modeler.engine.Item;
-import com.gjkf.modeler.engine.TextItem;
+import com.gjkf.modeler.engine.items.Item;
+import com.gjkf.modeler.engine.items.TextItem;
 import com.gjkf.modeler.engine.Window;
 import com.gjkf.modeler.engine.render.*;
 import org.joml.Vector3f;

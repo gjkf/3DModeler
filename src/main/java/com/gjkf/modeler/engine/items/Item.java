@@ -1,7 +1,7 @@
 /*
  * Created by Davide Cossu (gjkf), 11/2/2016
  */
-package com.gjkf.modeler.engine;
+package com.gjkf.modeler.engine.items;
 
 import com.gjkf.modeler.engine.render.Mesh;
 import org.joml.Vector3f;

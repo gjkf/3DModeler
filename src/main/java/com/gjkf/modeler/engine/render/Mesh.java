@@ -3,7 +3,7 @@
  */
 package com.gjkf.modeler.engine.render;
 
-import com.gjkf.modeler.engine.Item;
+import com.gjkf.modeler.engine.items.Item;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL15;
 

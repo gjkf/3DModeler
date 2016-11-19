@@ -3,7 +3,7 @@
  */
 package com.gjkf.modeler.engine.render;
 
-import com.gjkf.modeler.engine.Item;
+import com.gjkf.modeler.engine.items.Item;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 

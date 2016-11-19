@@ -14,7 +14,7 @@
  limitations under the License.
  */
 
-package com.gjkf.modeler.game;
+package com.gjkf.modeler.test.game;
 
 import java.io.*;
 import java.lang.reflect.Method;

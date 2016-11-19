@@ -1,20 +1,21 @@
 /*
  * Created by Davide Cossu (gjkf), 11/1/2016
  */
-package com.gjkf.modeler.game;
+package com.gjkf.modeler.test.game;
 
 import com.gjkf.modeler.engine.ILogic;
-import com.gjkf.modeler.engine.Item;
 import com.gjkf.modeler.engine.MouseInput;
 import com.gjkf.modeler.engine.Window;
-import com.gjkf.modeler.engine.render.*;
+import com.gjkf.modeler.engine.items.SkyBox;
+import com.gjkf.modeler.engine.items.Terrain;
+import com.gjkf.modeler.engine.render.Camera;
+import com.gjkf.modeler.engine.render.Colors;
+import com.gjkf.modeler.engine.render.Renderer;
+import com.gjkf.modeler.engine.render.Scene;
 import com.gjkf.modeler.engine.render.lights.DirectionalLight;
 import com.gjkf.modeler.engine.render.lights.SceneLight;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
-
-import java.util.List;
-import java.util.Map;
 
 import static org.lwjgl.glfw.GLFW.*;
 
@@ -49,42 +50,14 @@ public class DummyGame implements ILogic{
 
         scene = new Scene();
 
-        // Setup  Items
-        float reflectance = 1f;
-        Mesh mesh = OBJLoader.loadMesh("/models/cube.obj");
-        Texture texture = new Texture("/textures/grassblock.png");
-        Material material = new Material(texture, reflectance);
-        mesh.setMaterial(material);
-
-        float blockScale = 0.5f;
-        float skyBoxScale = 30.0f;
-        float extension = 2.0f;
-
-        float startx = extension * (-skyBoxScale + blockScale);
-        float startz = extension * (skyBoxScale - blockScale);
-        float starty = -1.0f;
-        float inc = blockScale * 2;
-
-        float posx = startx;
-        float posz = startz;
-        float incy;
-        int NUM_ROWS = (int)(extension * skyBoxScale * 2 / inc);
-        int NUM_COLS = (int)(extension * skyBoxScale * 2/ inc);
-        Item[] items  = new Item[NUM_ROWS * NUM_COLS];
-        for(int i=0; i<NUM_ROWS; i++) {
-            for(int j=0; j<NUM_COLS; j++) {
-                Item item = new Item(mesh);
-                item.setScale(blockScale);
-                incy = Math.random() > 0.9f ? blockScale * 2 : 0f;
-                item.setPosition(posx, starty + incy, posz);
-                items[i*NUM_COLS + j] = item;
-
-                posx += inc;
-            }
-            posx = startx;
-            posz -= inc;
-        }
-        scene.setItems(items);
+        float skyBoxScale = 50.0f;
+        float terrainScale = 10;
+        int terrainSize = 3;
+        float minY = -0.1f;
+        float maxY = 0.01f;
+        int textInc = 40;
+        Terrain terrain = new Terrain(terrainSize, terrainScale, minY, maxY, "/textures/heightmap.png", "/textures/terrain.png", textInc);
+        scene.setItems(terrain.getItems());
 
         // Setup  SkyBox
         SkyBox skyBox = new SkyBox("/models/skybox.obj", "/textures/skybox.png");
@@ -97,9 +70,10 @@ public class DummyGame implements ILogic{
         // Create HUD
         hud = new Hud("DEMO");
 
-        camera.getPosition().x = 0.65f;
-        camera.getPosition().y = 1.15f;
-        camera.getPosition().y = 4.34f;
+        camera.getPosition().x = 0.0f;
+        camera.getPosition().z = 0.0f;
+        camera.getPosition().y = -0.2f;
+        camera.getRotation().x = 10.f;
     }
 
     private void setupLights() {
@@ -153,7 +127,7 @@ public class DummyGame implements ILogic{
 
         // Update directional light direction, intensity and colour
         DirectionalLight directionalLight = sceneLight.getDirectionalLight();
-        lightAngle += 1.1f;
+        lightAngle += 0.5f;
         if (lightAngle > 90) {
             directionalLight.setIntensity(0);
             if (lightAngle >= 360) {
@@ -181,14 +155,14 @@ public class DummyGame implements ILogic{
     @Override
     public void render(Window window) {
         hud.updateSize(window);
+        //TODO: find why the hud does not render.
         renderer.render(window, camera, scene, hud);
     }
 
     @Override
     public void cleanup() {
         renderer.cleanup();
-        Map<Mesh, List<Item>> mapMeshes = scene.getGameMeshes();
-        mapMeshes.keySet().forEach(Mesh::cleanUp);
+        scene.cleanup();
         hud.cleanup();
     }
 }

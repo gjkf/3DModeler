@@ -4,6 +4,8 @@
 
 package com.gjkf.modeler.engine;
 
+import com.gjkf.modeler.engine.items.Item;
+
 /**
  * An interface that should be implemented when creating a new HUD.
  */
@@ -24,7 +26,7 @@ public interface IHud{
 
     default void cleanup() {
         Item[] items = getItems();
-        for (Item item : items) {
+        for(Item item : items){
             item.getMesh().cleanUp();
         }
     }

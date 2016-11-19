@@ -2,8 +2,9 @@
  * Created by Davide Cossu (gjkf), 11/13/2016
  */
 
-package com.gjkf.modeler.engine;
+package com.gjkf.modeler.engine.items;
 
+import com.gjkf.modeler.engine.Utils;
 import com.gjkf.modeler.engine.render.FontTexture;
 import com.gjkf.modeler.engine.render.Material;
 import com.gjkf.modeler.engine.render.Mesh;

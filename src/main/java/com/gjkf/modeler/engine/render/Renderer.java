@@ -4,9 +4,10 @@
 package com.gjkf.modeler.engine.render;
 
 import com.gjkf.modeler.engine.IHud;
-import com.gjkf.modeler.engine.Item;
 import com.gjkf.modeler.engine.Utils;
 import com.gjkf.modeler.engine.Window;
+import com.gjkf.modeler.engine.items.Item;
+import com.gjkf.modeler.engine.items.SkyBox;
 import com.gjkf.modeler.engine.render.lights.DirectionalLight;
 import com.gjkf.modeler.engine.render.lights.PointLight;
 import com.gjkf.modeler.engine.render.lights.SceneLight;
@@ -182,7 +183,6 @@ public class Renderer {
         renderScene(window, camera, scene);
         renderSkyBox(window, camera, scene);
         renderHud(window, hud);
-
     }
 
     /**
@@ -206,7 +206,7 @@ public class Renderer {
 
         sceneShaderProgram.setUniform("texture_sampler", 0);
         // Render each mesh with the associated game Items
-        Map<Mesh, List<Item>> mapMeshes = scene.getGameMeshes();
+        Map<Mesh, List<Item>> mapMeshes = scene.getMeshes();
         for (Mesh mesh : mapMeshes.keySet()) {
             sceneShaderProgram.setUniform("material", mesh.getMaterial());
             mesh.renderList(mapMeshes.get(mesh), (Item item) -> {

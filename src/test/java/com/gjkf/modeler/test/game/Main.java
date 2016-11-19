@@ -1,7 +1,7 @@
 /*
  * Created by Davide Cossu (gjkf), 11/1/2016
  */
-package com.gjkf.modeler.game;
+package com.gjkf.modeler.test.game;
 
 import com.gjkf.modeler.engine.Engine;
 import com.gjkf.modeler.engine.ILogic;

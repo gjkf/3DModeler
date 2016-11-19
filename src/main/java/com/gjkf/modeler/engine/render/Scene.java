@@ -4,7 +4,8 @@
 
 package com.gjkf.modeler.engine.render;
 
-import com.gjkf.modeler.engine.Item;
+import com.gjkf.modeler.engine.items.Item;
+import com.gjkf.modeler.engine.items.SkyBox;
 import com.gjkf.modeler.engine.render.lights.SceneLight;
 
 import java.util.ArrayList;
@@ -44,7 +45,7 @@ public class Scene{
      * @return Value for property 'gameMeshes'.
      */
 
-    public Map<Mesh, List<Item>> getGameMeshes() {
+    public Map<Mesh, List<Item>> getMeshes() {
         return meshMap;
     }
 
@@ -108,5 +109,12 @@ public class Scene{
         this.sceneLight = sceneLight;
     }
 
+    /**
+     * Cleans up the meshes.
+     */
+
+    public void cleanup() {
+        meshMap.keySet().forEach(Mesh::cleanUp);
+    }
 
 }

@@ -2,9 +2,12 @@
  * Created by Davide Cossu (gjkf), 11/15/2016
  */
 
-package com.gjkf.modeler.engine.render;
+package com.gjkf.modeler.engine.items;
 
-import com.gjkf.modeler.engine.Item;
+import com.gjkf.modeler.engine.render.Material;
+import com.gjkf.modeler.engine.render.Mesh;
+import com.gjkf.modeler.engine.render.OBJLoader;
+import com.gjkf.modeler.engine.render.Texture;
 
 /**
  * Object representing a sky box.
