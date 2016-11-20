@@ -5,11 +5,10 @@
 package com.gjkf.modeler.test.game;
 
 import com.gjkf.modeler.engine.IHud;
+import com.gjkf.modeler.engine.Window;
 import com.gjkf.modeler.engine.items.Item;
 import com.gjkf.modeler.engine.items.TextItem;
-import com.gjkf.modeler.engine.Window;
 import com.gjkf.modeler.engine.render.*;
-import org.joml.Vector3f;
 
 import java.awt.*;
 
@@ -34,7 +33,7 @@ public class Hud implements IHud{
         // Create compass
         Mesh mesh = OBJLoader.loadMesh("/models/compass.obj");
         Material material = new Material();
-        material.setColour(new Vector3f(1, 0, 0));
+        material.setColour(Colors.GREEN.toVector());
         mesh.setMaterial(material);
         compassItem = new Item(mesh);
         compassItem.setScale(40.0f);

@@ -97,8 +97,8 @@ public class Renderer {
     private void setupSceneShader() throws Exception {
         // Create shader
         sceneShaderProgram = new ShaderProgram();
-        sceneShaderProgram.createVertexShader(Utils.loadResource("shaders/vertex.glsl"));
-        sceneShaderProgram.createFragmentShader(Utils.loadResource("shaders/fragment.glsl"));
+        sceneShaderProgram.createVertexShader(Utils.loadResource("shaders/sceneVertex.glsl"));
+        sceneShaderProgram.createFragmentShader(Utils.loadResource("shaders/sceneFragment.glsl"));
         sceneShaderProgram.link();
 
         // Create uniforms for modelView and projection matrices and texture
@@ -113,6 +113,8 @@ public class Renderer {
         sceneShaderProgram.createPointLightListUniform("pointLights", MAX_POINT_LIGHTS);
         sceneShaderProgram.createSpotLightListUniform("spotLights", MAX_SPOT_LIGHTS);
         sceneShaderProgram.createDirectionalLightUniform("directionalLight");
+        // Create fog uniform
+        sceneShaderProgram.createFogUniform("fog");
     }
 
     /**
@@ -203,6 +205,8 @@ public class Renderer {
 
         SceneLight sceneLight = scene.getSceneLight();
         renderLights(viewMatrix, sceneLight);
+
+        sceneShaderProgram.setUniform("fog", scene.getFog());
 
         sceneShaderProgram.setUniform("texture_sampler", 0);
         // Render each mesh with the associated game Items

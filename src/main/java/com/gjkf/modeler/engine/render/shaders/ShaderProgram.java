@@ -7,6 +7,7 @@ import com.gjkf.modeler.engine.render.Material;
 import com.gjkf.modeler.engine.render.lights.DirectionalLight;
 import com.gjkf.modeler.engine.render.lights.PointLight;
 import com.gjkf.modeler.engine.render.lights.SpotLight;
+import com.gjkf.modeler.engine.render.weather.Fog;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
@@ -275,6 +276,33 @@ public class ShaderProgram {
         setUniform(uniformName + ".colour", material.getColour() );
         setUniform(uniformName + ".useColour", material.isTextured() ? 0 : 1);
         setUniform(uniformName + ".reflectance", material.getReflectance());
+    }
+
+    /**
+     * Sets the value of the given uniform.
+     *
+     * @param uniformName The uniform to reference.
+     * @param fog The value.
+     */
+
+    public void setUniform(String uniformName, Fog fog) {
+        setUniform(uniformName + ".activeFog", fog.isActive() ? 1 : 0);
+        setUniform(uniformName + ".colour", fog.getColour() );
+        setUniform(uniformName + ".density", fog.getDensity());
+    }
+
+    /**
+     * Creates the uniform for a fog.
+     *
+     * @param uniformName The name.
+     *
+     * @throws Exception If anything went wrong.
+     */
+
+    public void createFogUniform(String uniformName) throws Exception {
+        createUniform(uniformName + ".activeFog");
+        createUniform(uniformName + ".colour");
+        createUniform(uniformName + ".density");
     }
 
     /**

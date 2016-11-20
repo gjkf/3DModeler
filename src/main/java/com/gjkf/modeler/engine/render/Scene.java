@@ -7,6 +7,7 @@ package com.gjkf.modeler.engine.render;
 import com.gjkf.modeler.engine.items.Item;
 import com.gjkf.modeler.engine.items.SkyBox;
 import com.gjkf.modeler.engine.render.lights.SceneLight;
+import com.gjkf.modeler.engine.render.weather.Fog;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,11 +33,15 @@ public class Scene{
      * The light.
      */
     private SceneLight sceneLight;
-
+    /**
+     * The fog.
+     */
+    private Fog fog;
 
     /** Constructs a new Scene. */
     public Scene() {
         meshMap = new HashMap<>();
+        fog = Fog.NOFOG;
     }
 
     /**
@@ -107,6 +112,26 @@ public class Scene{
 
     public void setSceneLight(SceneLight sceneLight) {
         this.sceneLight = sceneLight;
+    }
+
+    /**
+     * Getter for property 'fog'.
+     *
+     * @return Value for property 'fog'.
+     */
+
+    public Fog getFog() {
+        return fog;
+    }
+
+    /**
+     * Setter for property 'fog'.
+     *
+     * @param fog Value to set for property 'fog'.
+     */
+
+    public void setFog(Fog fog) {
+        this.fog = fog;
     }
 
     /**

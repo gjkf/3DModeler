@@ -14,6 +14,7 @@ import com.gjkf.modeler.engine.render.Renderer;
 import com.gjkf.modeler.engine.render.Scene;
 import com.gjkf.modeler.engine.render.lights.DirectionalLight;
 import com.gjkf.modeler.engine.render.lights.SceneLight;
+import com.gjkf.modeler.engine.render.weather.Fog;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
@@ -66,6 +67,8 @@ public class DummyGame implements ILogic{
         skyBox.setScale(skyBoxScale);
         scene.setSkyBox(skyBox);
 
+        scene.setFog(new Fog(true, new Vector3f(0.5f, 0.5f, 0.5f), 0.5f));
+
         // Setup Lights
         setupLights();
 
@@ -73,8 +76,8 @@ public class DummyGame implements ILogic{
         hud = new Hud("DEMO");
 
         camera.getPosition().x = 0.0f;
-        camera.getPosition().z = 0.0f;
         camera.getPosition().y = -0.2f;
+        camera.getPosition().z = 0.0f;
         camera.getRotation().x = 10.f;
     }
 
@@ -164,7 +167,6 @@ public class DummyGame implements ILogic{
     @Override
     public void render(Window window) {
         hud.updateSize(window);
-        //TODO: find why the hud does not render.
         renderer.render(window, camera, scene, hud);
     }
 
