@@ -33,6 +33,8 @@ public class DummyGame implements ILogic{
 
     private Hud hud;
 
+    private Terrain terrain;
+
     private float lightAngle;
 
     private static final float CAMERA_POS_STEP = 0.05f;
@@ -56,7 +58,7 @@ public class DummyGame implements ILogic{
         float minY = -0.1f;
         float maxY = 0.01f;
         int textInc = 40;
-        Terrain terrain = new Terrain(terrainSize, terrainScale, minY, maxY, "/textures/heightmap.png", "/textures/terrain.png", textInc);
+        terrain = new Terrain(terrainSize, terrainScale, minY, maxY, "/textures/heightmap.png", "/textures/terrain.png", textInc);
         scene.setItems(terrain.getItems());
 
         // Setup  SkyBox
@@ -121,13 +123,20 @@ public class DummyGame implements ILogic{
         }
 
         // Update camera position
+        Vector3f prevPos = new Vector3f(camera.getPosition());
         camera.movePosition(cameraInc.x * CAMERA_POS_STEP, cameraInc.y * CAMERA_POS_STEP, cameraInc.z * CAMERA_POS_STEP);
+        // Check if there has been a collision. If true, set the y position to
+        // the maximum height
+        float height = terrain.getHeight(camera.getPosition());
+        if(camera.getPosition().y-0.5 <= height){
+            camera.setPosition(prevPos.x, prevPos.y, prevPos.z);
+        }
 
         SceneLight sceneLight = scene.getSceneLight();
 
         // Update directional light direction, intensity and colour
         DirectionalLight directionalLight = sceneLight.getDirectionalLight();
-        lightAngle += 0.5f;
+        lightAngle += 0.1f;
         if (lightAngle > 90) {
             directionalLight.setIntensity(0);
             if (lightAngle >= 360) {

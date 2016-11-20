@@ -19,7 +19,7 @@ public class Main{
         try {
             boolean vSync = true;
             ILogic gameLogic = new DummyGame();
-            Engine gameEng = new Engine("Game", 1000, 1000, vSync, gameLogic);
+            Engine gameEng = new Engine("Game", 800, 800, vSync, gameLogic);
             gameEng.start();
         } catch (Exception excp) {
             excp.printStackTrace();

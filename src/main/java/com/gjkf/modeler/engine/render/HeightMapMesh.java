@@ -7,7 +7,6 @@ package com.gjkf.modeler.engine.render;
 import com.gjkf.modeler.engine.Utils;
 import org.joml.Vector3f;
 
-import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,11 +26,11 @@ public class HeightMapMesh{
     /**
      * The start of the X coordinate on the image.
      */
-    private static final float STARTX = -0.5f;
+    public static final float STARTX = -0.5f;
     /**
      * The start on the Y coordinate on the image.
      */
-    private static final float STARTZ = -0.5f;
+    public static final float STARTZ = -0.5f;
     /**
      * The minimum Y value of the vertex.
      */
@@ -40,6 +39,10 @@ public class HeightMapMesh{
      * The maximum Y value of the vertex.
      */
     private final float maxY;
+    /**
+     * The array containing each point's height.
+     */
+    private final float[][] heightArray;
     /**
      * The created mesh.
      */
@@ -50,20 +53,21 @@ public class HeightMapMesh{
      *
      * @param minY The minimum value the Y coordinate of the terrain can get.
      * @param maxY The maximum value the Y coordinate of the terrain can get.
-     * @param heightMapFile The file from which read the height map.
+     * @param heightMapImage The file from which read the height map.
      * @param textureFile The file from which read the texture.
      * @param textInc The amount of texture between vertices.
      *
      * @throws Exception If anything went wrong.
      */
 
-    public HeightMapMesh(float minY, float maxY, String heightMapFile, String textureFile, int textInc) throws Exception {
+    public HeightMapMesh(float minY, float maxY, BufferedImage heightMapImage, String textureFile, int textInc) throws Exception {
         this.minY = minY;
         this.maxY = maxY;
 
-        BufferedImage buffImage = ImageIO.read(getClass().getResourceAsStream(heightMapFile));
-        int height = buffImage.getHeight();
-        int width = buffImage.getWidth();
+        int height = heightMapImage.getHeight();
+        int width = heightMapImage.getWidth();
+
+        heightArray = new float[height][width];
 
         Texture texture = new Texture(textureFile);
 
@@ -78,8 +82,10 @@ public class HeightMapMesh{
             for(int col = 0; col < width; col++){
                 // Create vertex for current position
                 positions.add(STARTX + col * incx); // x
-                positions.add(getHeight(col, row, buffImage)); //y
-                positions.add(STARTZ + row * incz); //z
+                float currentHeight = getHeight(col, row, heightMapImage);
+                heightArray[row][col] = currentHeight;
+                positions.add(currentHeight); // y
+                positions.add(STARTZ + row * incz); // z
 
                 // Set texture coordinates
                 textCoords.add((float) textInc * (float) col / (float) width);
@@ -109,6 +115,25 @@ public class HeightMapMesh{
         this.mesh = new Mesh(posArr, textCoordsArr, normalsArr, indicesArr);
         Material material = new Material(texture, 0.0f);
         mesh.setMaterial(material);
+    }
+
+    /**
+     * Gets the height of the given point.
+     *
+     * @param row The row.
+     * @param col The column.
+     *
+     * @return The height.
+     */
+
+    public float getHeight(int row, int col) {
+        float result = 0;
+        if ( row >= 0 && row < heightArray.length ) {
+            if ( col >= 0 && col < heightArray[row].length ) {
+                result = heightArray[row][col];
+            }
+        }
+        return result;
     }
 
     /**
