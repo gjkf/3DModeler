@@ -26,13 +26,30 @@ public class Transformation {
      */
     private final Matrix4f modelViewMatrix;
     /**
+     * The model light matrix.
+     */
+    private final Matrix4f modelLightMatrix;
+    /**
+     * The model light view matrix.
+     */
+    private final Matrix4f modelLightViewMatrix;
+    /**
      * The view matrix.
      */
     private final Matrix4f viewMatrix;
     /**
-     * The orthographic matrix.
+     * The light view matrix.
      */
-    private final Matrix4f orthoMatrix;
+    private final Matrix4f lightViewMatrix;
+    /**
+     * The ortographic projection matrix.
+     */
+    private final Matrix4f orthoProjMatrix;
+    /**
+     * The orto matrix.
+     */
+    private final Matrix4f ortho2DMatrix;
+
     /**
      * The orthomodel matrix.
      */
@@ -47,9 +64,13 @@ public class Transformation {
         projectionMatrix = new Matrix4f();
         modelMatrix = new Matrix4f();
         modelViewMatrix = new Matrix4f();
+        modelLightMatrix = new Matrix4f();
+        modelLightViewMatrix = new Matrix4f();
         viewMatrix = new Matrix4f();
-        orthoMatrix = new Matrix4f();
+        orthoProjMatrix = new Matrix4f();
+        ortho2DMatrix = new Matrix4f();
         orthoModelMatrix = new Matrix4f();
+        lightViewMatrix = new Matrix4f();
     }
 
     /**
@@ -82,6 +103,35 @@ public class Transformation {
     }
 
     /**
+     * Getter for property 'orthoProjectionMatrix'.
+     *
+     * @return Value for property 'orthoProjectionMatrix'.
+     */
+
+    public final Matrix4f getOrthoProjectionMatrix() {
+        return orthoProjMatrix;
+    }
+
+    /**
+     * Updates the orthographic projection matrix.
+     *
+     * @param left The left coordinate.
+     * @param right The right coordinate.
+     * @param bottom The bottom coordinate.
+     * @param top The top coordinate.
+     * @param zNear The near Z coordinate.
+     * @param zFar The far Z coordinate.
+     *
+     * @return The updated matrix.
+     */
+
+    public Matrix4f updateOrthoProjectionMatrix(float left, float right, float bottom, float top, float zNear, float zFar) {
+        orthoProjMatrix.identity();
+        orthoProjMatrix.setOrtho(left, right, bottom, top, zNear, zFar);
+        return orthoProjMatrix;
+    }
+
+    /**
      * Getter for property 'viewMatrix'.
      *
      * @return Value for property 'viewMatrix'.
@@ -100,16 +150,60 @@ public class Transformation {
      */
 
     public Matrix4f updateViewMatrix(Camera camera) {
-        Vector3f cameraPos = camera.getPosition();
-        Vector3f rotation = camera.getRotation();
+        return updateGenericViewMatrix(camera.getPosition(), camera.getRotation(), viewMatrix);
+    }
 
-        viewMatrix.identity();
+    /**
+     * Updates the generic view matrix.
+     *
+     * @param position The position.
+     * @param rotation The rotation.
+     * @param matrix The matrix.
+     *
+     * @return The generic view matrix.
+     */
+
+    private Matrix4f updateGenericViewMatrix(Vector3f position, Vector3f rotation, Matrix4f matrix) {
+        matrix.identity();
         // First do the rotation so camera rotates over its position
-        viewMatrix.rotate((float)Math.toRadians(rotation.x), new Vector3f(1, 0, 0))
+        matrix.rotate((float)Math.toRadians(rotation.x), new Vector3f(1, 0, 0))
                 .rotate((float)Math.toRadians(rotation.y), new Vector3f(0, 1, 0));
         // Then do the translation
-        viewMatrix.translate(-cameraPos.x, -cameraPos.y, -cameraPos.z);
-        return viewMatrix;
+        matrix.translate(-position.x, -position.y, -position.z);
+        return matrix;
+    }
+
+    /**
+     * Getter for property 'lightViewMatrix'.
+     *
+     * @return Value for property 'lightViewMatrix'.
+     */
+
+    public Matrix4f getLightViewMatrix() {
+        return lightViewMatrix;
+    }
+
+    /**
+     * Setter for property 'lightViewMatrix'.
+     *
+     * @param lightViewMatrix Value to set for property 'lightViewMatrix'.
+     */
+
+    public void setLightViewMatrix(Matrix4f lightViewMatrix) {
+        this.lightViewMatrix.set(lightViewMatrix);
+    }
+
+    /**
+     * Update the light view matrix.
+     *
+     * @param position The position.
+     * @param rotation The rotation.
+     *
+     * @return The updated matrix.
+     */
+
+    public Matrix4f updateLightViewMatrix(Vector3f position, Vector3f rotation) {
+        return updateGenericViewMatrix(position, rotation, lightViewMatrix);
     }
 
     /**
@@ -123,10 +217,10 @@ public class Transformation {
      * @return The new matrix.
      */
 
-    public final Matrix4f getOrthoProjectionMatrix(float left, float right, float bottom, float top) {
-        orthoMatrix.identity();
-        orthoMatrix.setOrtho2D(left, right, bottom, top);
-        return orthoMatrix;
+    public final Matrix4f getOrtho2DProjectionMatrix(float left, float right, float bottom, float top) {
+        ortho2DMatrix.identity();
+        ortho2DMatrix.setOrtho2D(left, right, bottom, top);
+        return ortho2DMatrix;
     }
 
     /**
@@ -147,6 +241,26 @@ public class Transformation {
                 scale(item.getScale());
         modelViewMatrix.set(viewMatrix);
         return modelViewMatrix.mul(modelMatrix);
+    }
+
+    /**
+     * Builds the model light view matrix.
+     *
+     * @param item The item.
+     * @param matrix The matrix.
+     *
+     * @return The newly built matrix.
+     */
+
+    public Matrix4f buildModelLightViewMatrix(Item item, Matrix4f matrix) {
+        Vector3f rotation = item.getRotation();
+        modelLightMatrix.identity().translate(item.getPosition()).
+                rotateX((float)Math.toRadians(-rotation.x)).
+                rotateY((float)Math.toRadians(-rotation.y)).
+                rotateZ((float)Math.toRadians(-rotation.z)).
+                scale(item.getScale());
+        modelLightViewMatrix.set(matrix);
+        return modelLightViewMatrix.mul(modelLightMatrix);
     }
 
     /**
