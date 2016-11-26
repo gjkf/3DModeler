@@ -105,6 +105,8 @@ public class Renderer {
         sceneShaderProgram.createUniform("projectionMatrix");
         sceneShaderProgram.createUniform("modelViewMatrix");
         sceneShaderProgram.createUniform("texture_sampler");
+        sceneShaderProgram.createUniform("normalMap");
+
         // Create uniform for material
         sceneShaderProgram.createMaterialUniform("material");
         // Create lighting related uniforms
@@ -178,13 +180,15 @@ public class Renderer {
             window.setResized(false);
         }
 
-        // Update projection and view atrices once per render cycle
+        // Update projection and view matrices once per render cycle
         transformation.updateProjectionMatrix(FOV, window.getWidth(), window.getHeight(), Z_NEAR, Z_FAR);
         transformation.updateViewMatrix(camera);
 
         renderScene(window, camera, scene);
-        renderSkyBox(window, camera, scene);
-        renderHud(window, hud);
+        if(scene.getSkyBox() != null)
+            renderSkyBox(window, camera, scene);
+        if(hud != null)
+            renderHud(window, hud);
     }
 
     /**
@@ -207,8 +211,9 @@ public class Renderer {
         renderLights(viewMatrix, sceneLight);
 
         sceneShaderProgram.setUniform("fog", scene.getFog());
-
         sceneShaderProgram.setUniform("texture_sampler", 0);
+        sceneShaderProgram.setUniform("normalMap", 1);
+
         // Render each mesh with the associated game Items
         Map<Mesh, List<Item>> mapMeshes = scene.getMeshes();
         for (Mesh mesh : mapMeshes.keySet()) {

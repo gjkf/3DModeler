@@ -27,6 +27,10 @@ public class Material {
      * The texture.
      */
     private Texture texture;
+    /**
+     * The texture of the normals.
+     */
+    private Texture normalMap;
 
     /** Constructs a new Material. */
     public Material() {
@@ -120,4 +124,35 @@ public class Material {
     public void setTexture(Texture texture) {
         this.texture = texture;
     }
+
+    /**
+     * Returns if it has a normal map.
+     *
+     * @return TRUE if it has a normal map.
+     */
+
+    public boolean hasNormalMap() {
+        return this.normalMap != null;
+    }
+
+    /**
+     * Getter for property 'normalMap'.
+     *
+     * @return Value for property 'normalMap'.
+     */
+
+    public Texture getNormalMap() {
+        return normalMap;
+    }
+
+    /**
+     * Setter for property 'normalMap'.
+     *
+     * @param normalMap Value to set for property 'normalMap'.
+     */
+
+    public void setNormalMap(Texture normalMap) {
+        this.normalMap = normalMap;
+    }
+
 }
