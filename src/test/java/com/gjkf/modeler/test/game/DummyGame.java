@@ -3,14 +3,19 @@
  */
 package com.gjkf.modeler.test.game;
 
-import com.gjkf.modeler.engine.ILogic;
-import com.gjkf.modeler.engine.MouseInput;
-import com.gjkf.modeler.engine.Window;
-import com.gjkf.modeler.engine.items.Item;
-import com.gjkf.modeler.engine.items.Terrain;
-import com.gjkf.modeler.engine.render.*;
-import com.gjkf.modeler.engine.render.lights.DirectionalLight;
-import com.gjkf.modeler.engine.render.lights.SceneLight;
+import com.gjkf.seriousEngine.ILogic;
+import com.gjkf.seriousEngine.MouseInput;
+import com.gjkf.seriousEngine.Window;
+import com.gjkf.seriousEngine.items.Item;
+import com.gjkf.seriousEngine.items.Terrain;
+import com.gjkf.seriousEngine.loaders.md5.MD5AnimModel;
+import com.gjkf.seriousEngine.loaders.md5.MD5Loader;
+import com.gjkf.seriousEngine.loaders.md5.MD5Model;
+import com.gjkf.seriousEngine.loaders.obj.OBJLoader;
+import com.gjkf.seriousEngine.render.*;
+import com.gjkf.seriousEngine.render.anim.AnimItem;
+import com.gjkf.seriousEngine.render.lights.DirectionalLight;
+import com.gjkf.seriousEngine.render.lights.SceneLight;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
@@ -36,11 +41,11 @@ public class DummyGame implements ILogic{
 
     private float lightAngle;
 
-    private Item cubeItem;
+    private AnimItem bob;
 
     private static final float CAMERA_POS_STEP = 0.05f;
 
-    public DummyGame() {
+    public DummyGame(){
         renderer = new Renderer();
         camera = new Camera();
         cameraInc = new Vector3f(0.0f, 0.0f, 0.0f);
@@ -49,37 +54,45 @@ public class DummyGame implements ILogic{
     }
 
     @Override
-    public void init(Window window) throws Exception {
-        renderer.init();
+    public void init(Window window) throws Exception{
+        renderer.init(window);
+
         scene = new Scene();
 
-        // Setup  GameItems
         float reflectance = 1f;
-        Mesh cubeMesh = OBJLoader.loadMesh("/models/cube.obj");
-        Material cubeMaterial = new Material(new Vector3f(0, 1, 0), reflectance);
-        cubeMesh.setMaterial(cubeMaterial);
-        cubeItem = new Item(cubeMesh);
-        cubeItem.setPosition(0, 0, 0);
-        cubeItem.setScale(0.5f);
 
         Mesh quadMesh = OBJLoader.loadMesh("/models/plane.obj");
-        Material quadMaterial = new Material(new Vector3f(0.0f, 0.0f, 1.0f), reflectance);
+        Material quadMaterial = new Material(Colors.BLUE.toVector(), reflectance);
         quadMesh.setMaterial(quadMaterial);
         Item quadItem = new Item(quadMesh);
-        quadItem.setPosition(0, -1, 0);
+        quadItem.setPosition(0, 0, 0);
         quadItem.setScale(2.5f);
 
-        scene.setItems(new Item[]{cubeItem, quadItem});
+        // Setup  GameItems
+        MD5Model md5Meshodel = MD5Model.parse("/models/monster/monster.md5mesh");
+        MD5AnimModel md5AnimModel = MD5AnimModel.parse("/models/monster/monster.md5anim");
+//        MD5Model md5Meshodel = MD5Model.parse("/models/bob/boblamp.md5mesh");
+//        MD5AnimModel md5AnimModel = MD5AnimModel.parse("/models/bob/boblamp.md5anim");
+
+        bob = MD5Loader.process(md5Meshodel, md5AnimModel, Colors.WHITE.toVector());
+        bob.setScale(0.05f);
+        bob.setRotation(90, 0, 90);
+        //monster.setRotation(90, 0, 0);
+
+        scene.setItems(new Item[] {quadItem, bob});
 
         // Setup Lights
         setupLights();
 
-        camera.getPosition().z = 2;
+        camera.getPosition().x = 0.25f;
+        camera.getPosition().y = 6.5f;
+        camera.getPosition().z = 6.5f;
+        camera.getRotation().x = 25;
+        camera.getRotation().y = -1;
         hud = new Hud("");
-
     }
 
-    private void setupLights() {
+    private void setupLights(){
         SceneLight sceneLight = new SceneLight();
         scene.setSceneLight(sceneLight);
 
@@ -91,13 +104,13 @@ public class DummyGame implements ILogic{
         float lightIntensity = 1.0f;
         Vector3f lightDirection = new Vector3f(0, 1, 1);
         DirectionalLight directionalLight = new DirectionalLight(new Vector3f(1, 1, 1), lightDirection, lightIntensity);
-        directionalLight.setShadowPosMult(5);
+        directionalLight.setShadowPosMult(10);
         directionalLight.setOrthoCords(-10.0f, 10.0f, -10.0f, 10.0f, -1.0f, 20.0f);
         sceneLight.setDirectionalLight(directionalLight);
     }
 
     @Override
-    public void input(Window window, MouseInput mouseInput) {
+    public void input(Window window, MouseInput mouseInput){
         cameraInc.set(0, 0, 0);
         if(window.isKeyPressed(GLFW_KEY_W)){
             cameraInc.z = -1;
@@ -106,7 +119,7 @@ public class DummyGame implements ILogic{
         }
         if(window.isKeyPressed(GLFW_KEY_A)){
             cameraInc.x = -1;
-        }else if (window.isKeyPressed(GLFW_KEY_D)){
+        }else if(window.isKeyPressed(GLFW_KEY_D)){
             cameraInc.x = 1;
         }
         if(window.isKeyPressed(GLFW_KEY_LEFT_SHIFT)){
@@ -121,11 +134,13 @@ public class DummyGame implements ILogic{
         }else{
             angleInc = 0;
         }
-
+        if(window.isKeyPressed(GLFW_KEY_L)){
+            bob.nextFrame();
+        }
     }
 
     @Override
-    public void update(float interval, MouseInput mouseInput) {
+    public void update(float interval, MouseInput mouseInput){
         // Update camera based on mouse
         if(mouseInput.isLeftButtonPressed()){
             Vector2f rotVec = mouseInput.getDisplVec();
@@ -142,28 +157,19 @@ public class DummyGame implements ILogic{
             camera.setPosition(prevPos.x, prevPos.y, prevPos.z);
         }
 
-        float rotY = cubeItem.getRotation().y;
-        rotY += 0.5f;
-        if ( rotY >= 360 ) {
-            rotY -= 360;
-        }
-        cubeItem.getRotation().y = rotY;
-
         lightAngle += angleInc;
-        if ( lightAngle < 0 ) {
+        if(lightAngle < 0){
             lightAngle = 0;
-        } else if (lightAngle > 180 ) {
+        }else if(lightAngle > 180){
             lightAngle = 180;
         }
-        float zValue = (float)Math.cos(Math.toRadians(lightAngle));
-        float yValue = (float)Math.sin(Math.toRadians(lightAngle));
+        float zValue = (float) Math.cos(Math.toRadians(lightAngle));
+        float yValue = (float) Math.sin(Math.toRadians(lightAngle));
         Vector3f lightDirection = this.scene.getSceneLight().getDirectionalLight().getDirection();
         lightDirection.x = 0;
         lightDirection.y = yValue;
         lightDirection.z = zValue;
         lightDirection.normalize();
-        float lightAngle = (float)Math.toDegrees(Math.acos(lightDirection.z));
-        hud.setStatusText("LightAngle: " + lightAngle);
     }
 
     @Override
@@ -175,7 +181,7 @@ public class DummyGame implements ILogic{
     }
 
     @Override
-    public void cleanup() {
+    public void cleanup(){
         renderer.cleanup();
         scene.cleanup();
         if(hud != null){

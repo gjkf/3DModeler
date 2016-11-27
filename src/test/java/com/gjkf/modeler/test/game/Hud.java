@@ -4,13 +4,15 @@
 
 package com.gjkf.modeler.test.game;
 
-import com.gjkf.modeler.engine.IHud;
-import com.gjkf.modeler.engine.Window;
-import com.gjkf.modeler.engine.items.Item;
-import com.gjkf.modeler.engine.items.TextItem;
-import com.gjkf.modeler.engine.render.*;
+import com.gjkf.seriousEngine.*;
+import com.gjkf.seriousEngine.Window;
+import com.gjkf.seriousEngine.items.Item;
+import com.gjkf.seriousEngine.items.TextItem;
+import com.gjkf.seriousEngine.render.Colors;
+import com.gjkf.seriousEngine.render.FontTexture;
 
 import java.awt.*;
+
 
 public class Hud implements IHud{
 

@@ -3,8 +3,10 @@
  */
 package com.gjkf.modeler.test.game;
 
-import com.gjkf.modeler.engine.Engine;
-import com.gjkf.modeler.engine.ILogic;
+import com.gjkf.seriousEngine.Engine;
+import com.gjkf.seriousEngine.ILogic;
+import com.gjkf.seriousEngine.SharedLibraryLoader;
+import com.gjkf.seriousEngine.Window;
 
 public class Main{
 
@@ -19,7 +21,8 @@ public class Main{
         try {
             boolean vSync = true;
             ILogic gameLogic = new DummyGame();
-            Engine gameEng = new Engine("Game", 800, 800, vSync, gameLogic);
+            Window.WindowOptions opts = new Window.WindowOptions();
+            Engine gameEng = new Engine("Game", 800, 800, vSync, opts, gameLogic);
             gameEng.start();
         } catch (Exception excp) {
             excp.printStackTrace();
